@@ -1,0 +1,16 @@
+handles.Setup.Stimulus.Duration     = 0.010;
+handles.Setup.Stimulus.Type         = 'wave'; % 'tone', 'wave', 'click'
+handles.Setup.Stimulus.Level        = 80; % dB SPL after calibration
+
+handles.Setup.Stimulus.ITD          = 0;  % sec.
+%handles.Setup.Stimulus.ILD          = [-20 -10 0 10 20]; % dB
+handles.Setup.Stimulus.ILD          = [0]; % dB
+handles.Setup.Recording.FileName    = 'data/datafile';
+
+handles.Setup.Recording.ExtraSmp    = 480;
+handles.Setup.Recording.PreTime     = 0.004;
+handles.Setup.Recording.RecTime     = 0.015;
+
+handles.Setup.Recording.ArtefactThr = 20; % µV
+
+handles.Setup.Recording.MaxRepsPerCond = 1000;
