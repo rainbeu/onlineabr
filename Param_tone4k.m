@@ -6,8 +6,8 @@ handles.Setup.Stimulus.Window         = 'hann'; % 'none' or 'hann'
 handles.Setup.Stimulus.Level          = 60; % dB SPL after calibration
 
 handles.Setup.Stimulus.ITD            = 0 * 1e-6;  % sec.
-%handles.Setup.Stimulus.ILD            = 0; % dB
-handles.Setup.Stimulus.ILD            = 30:10:70; % dB
+handles.Setup.Stimulus.ILD            = 0; % dB
+%handles.Setup.Stimulus.ILD            = 30:10:70; % dB
 handles.Setup.Stimulus.LevelThreshold = true; % for monaural level threshold: 
                                                % set this to true, set
                                                % level to 0, set ILD list
