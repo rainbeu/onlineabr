@@ -40,7 +40,7 @@ switch St.Type
         stimulus(end+1:N) = 0;
         stimulus = stimulus/max(abs(stimulus));
         RMS = -db(sqrt(2));
-        TimeOffset = round(StdDuration*fs/2);
+        TimeOffset = round(StdDuration*fs/2)/fs;
     case 'doubleclick'
         stimulus = [0.2;zeros(6,1);1;zeros(N-8,1)];
         RMS = 10*log10(0.2.^2+1^2);
