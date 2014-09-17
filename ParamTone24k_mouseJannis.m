@@ -47,7 +47,7 @@ handles.Setup.Stimulus.LevelThreshold = true; % for monaural level threshold:
 
 handles.Setup.Stimulus.UseSignSwapping = true;
 
-handles.Setup.Recording.FileName    = 'data/h0018';
+handles.Setup.Recording.FileName    = 'data/h0019';
 handles.Setup.Recording.EEGCh       = 1;
 handles.Setup.Recording.MicCh       = [4 5];
 handles.Setup.Recording.TrgCh       = 3;
