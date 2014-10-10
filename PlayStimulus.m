@@ -32,8 +32,15 @@ switch St.Type
         TimeOffset = 0;
     case 'click'
         stimulus = [1;zeros(N-1,1)];
-        RMS = 0;
+        RMS = -db(sqrt(2));
         TimeOffset = 0;
+    case 'standardclick'
+        StdDuration = 50e-6;
+        stimulus = zp2tf(exp(-1i*[+1;-1]*(1/StdDuration)*2*pi/fs),[],1).';
+        stimulus(end+1:N) = 0;
+        stimulus = stimulus/max(abs(stimulus));
+        RMS = -db(sqrt(2));
+        TimeOffset = round(StdDuration*fs/2)/fs;
     case 'doubleclick'
         stimulus = [0.2;zeros(6,1);1;zeros(N-8,1)];
         RMS = 10*log10(0.2.^2+1^2);

@@ -1,9 +1,13 @@
-handles.Setup.Stimulus.Duration       = 0.002;
+handles.Setup.Stimulus.Duration       = 0.004;
 handles.Setup.Stimulus.Type           = 'tone'; % 'tone', 'wave', 'click'
 handles.Setup.Stimulus.Frequency      = 1000;
 handles.Setup.Stimulus.RampDur        = 0.001;
 handles.Setup.Stimulus.Window         = 'hann'; % 'none' or 'hann'
 handles.Setup.Stimulus.Level          = 80; % dB SPL after calibration
+
+
+handles.Setup.Stimulus.UseSignSwapping = false;
+
 
 handles.Setup.Stimulus.ITD            = 0 * 1e-6;  % sec.
 handles.Setup.Stimulus.ILD            = 0; % dB
@@ -18,6 +22,6 @@ handles.Setup.Recording.ExtraSmp    = 4800;
 handles.Setup.Recording.PreTime     = 0.000;
 handles.Setup.Recording.RecTime     = 0.035;
 
-handles.Setup.Recording.ArtefactThr = 2000; % µV
+handles.Setup.Recording.ArtefactThr = 100000; % µV
 
 handles.Setup.Recording.MaxRepsPerCond = 10000;

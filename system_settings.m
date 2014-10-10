@@ -14,7 +14,6 @@ if nargin >= 1
             stSystemSettings.mfOutInChannelList    = [0 3; 1 4 ]; % starting with 0
             stSystemSettings.mfCrossChannelList    = [0 4; 1 3 ]; % starting with 0, for cross talk evaluation
             stSystemSettings.vfExpFrequencyRange   = [400 22000];  % the important frequency region
-            stSystemSettings.nOldEqualFilterOrder  = 300;             
             stSystemSettings.nEqualFilterOrder     = 128;             
             stSystemSettings.nSamplingFrequency    = fs;
             stSystemSettings.fSweepStartFrequency  = 200;
