@@ -1,6 +1,6 @@
 handles.Setup.Stimulus.Duration       = 0.001;
 handles.Setup.Stimulus.Type           = 'tone'; % 'tone', 'wave', 'click'
-handles.Setup.Stimulus.Frequency      = 8000;
+handles.Setup.Stimulus.Frequency      = 1000;
 handles.Setup.Stimulus.RampDur        = 0.0005;
 handles.Setup.Stimulus.Window         = 'hann'; % 'none' or 'hann'
 handles.Setup.Stimulus.Level          = 0; % dB SPL after calibration

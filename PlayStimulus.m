@@ -294,7 +294,12 @@ while bRunning && min(AvgC(:)) < Rc.MaxRepsPerCond
         sign      = floor(rand(1)*2)*2-1;
     end
     
-    lastsignal = [[sum(signal,2), zeros(size(signal,1),1), trigger, 10^(-22/20)*signal, zeros(size(signal,1),1)];zeros(Rc.ExtraSmp,Hw.RecCh)];
+    
+    lastsignal = zeros(size(signal,1)+Rc.ExtraSmp,Hw.RecCh);
+    lastsignal(1:size(signal,1),Rc.EEGCh) = sum(signal,2);
+    lastsignal(1:size(signal,1),Rc.MicCh) = 10^(-22/20)*signal;
+    lastsignal(1:size(trigger,1),Rc.TrgCh) = trigger;
+%     lastsignal = [[sum(signal,2), zeros(size(signal,1),1), trigger, 10^(-22/20)*signal, zeros(size(signal,1),1)];zeros(Rc.ExtraSmp,Hw.RecCh)];
     
     % positive ILD => softer left (1), louder right (2)
     switch itdidx
