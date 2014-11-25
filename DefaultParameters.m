@@ -1,24 +1,19 @@
 handles.Setup.Fs                  = 48000;
 handles.Setup.DisplayTime         = 1;  % display is updated every ... seconds 
 
-handles.Setup.Hardware.PlayDev    = 0; % notebook: 2
-handles.Setup.Hardware.RecDev     = 0; % notebook: 2
+handles.Setup.Hardware.PlayDev    = 40; % ASIO
+handles.Setup.Hardware.RecDev     = 40; % ASIO
 handles.Setup.Hardware.PlayCh     = 6;
 handles.Setup.Hardware.RecCh      = 6;
 handles.Setup.Hardware.BufferSize = 0;
-%handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_ABR_gerbil_2_2014-05-02.mat';
-%handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_ABR_gerbil_2_2014-06-30_DONOTUSEFORABR.mat';
-%handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_ABR_gerbil_2_2014-05-21.mat';
-%handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_ABR_gerbil_2_2014-06-30_NOFILTERHIGH.mat';
-%handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_ABR_gerbil_2014-06-12.mat';
-handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_ABR_mouse_2014-09-17.mat';
+handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_owl_better_2014-05-28.mat';
 handles.Setup.Hardware.LevelCorrection = [-0 0];
 handles.Setup.Hardware.StimCh     = [1 2];
 handles.Setup.Hardware.TrgCh      = 3;
 
-handles.Setup.Stimulus.Duration       = 0.010;
-handles.Setup.Stimulus.Type           = 'standardclick'; % 'tone', 'wave', 'click'
-handles.Setup.Stimulus.Frequency      = 24000;
+handles.Setup.Stimulus.Duration       = 0.020;
+handles.Setup.Stimulus.Type           = 'click'; % 'tone', 'wave', 'click'
+handles.Setup.Stimulus.Frequency      = 2000;
 handles.Setup.Stimulus.ModulationDepth = 1;
 handles.Setup.Stimulus.Fs             = handles.Setup.Fs;
 handles.Setup.Stimulus.FileName       = 'chirp20kHz_48kHz.wav'; 
@@ -28,17 +23,13 @@ handles.Setup.Stimulus.FileCh         = 1;
 handles.Setup.Stimulus.bDoResample    = false;
 handles.Setup.Stimulus.RampDur        = 0.005;
 handles.Setup.Stimulus.Window         = 'none'; % 'hann'
-handles.Setup.Stimulus.Level          = 80; % dB SPL after calibration
+handles.Setup.Stimulus.Level          = 70; % dB SPL after calibration
 
-%handles.Setup.Stimulus.ITD            = [-2000 -1000 0 1000 2000] * 1e-6;  % sec.
-%handles.Setup.Stimulus.ILD            = [-10]; % dB
+% handles.Setup.Stimulus.ITD            = [-2000 -1000 0 1000 2000] * 1e-6;  % sec.
 %handles.Setup.Stimulus.ILD            = [-30 -20 -10 0 10 20 30]; % dB
-%handles.Setup.Stimulus.ITD            = [-1000 -750 -500 -250 -125 0 125 250 500 750 1000] * 1e-6;  % sec.
-%handles.Setup.Stimulus.ITD            = [-2000 -1000 -750 -500 -250 -125 -62.5 0 62.5 125 250 500 750 1000 2000] * 1e-6;  % sec.
+%handles.Setup.Stimulus.ITD            = [-2000 -1000 -750 -500 -250 0 250 500 750 1000 2000] * 1e-6;  % sec.
 handles.Setup.Stimulus.ITD            = [0] * 1e-6;  % sec.
 handles.Setup.Stimulus.ILD            = [0]; % dB
-%handles.Setup.Stimulus.ILD            = [40:10:80]; % dB
-%handles.Setup.Stimulus.ILD            = [-30 -10 0 10 30]; % dB
 
 handles.Setup.Stimulus.LevelThreshold = false; % for monaural level threshold: 
                                                % set this to true, set
@@ -58,5 +49,5 @@ handles.Setup.Recording.RecTime     = 0.015;
 
 handles.Setup.Recording.ArtefactThr = 25; % µV
 
-handles.Setup.Recording.MaxRepsPerCond = 500;
+handles.Setup.Recording.MaxRepsPerCond = 5000;
 

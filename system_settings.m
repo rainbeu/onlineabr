@@ -13,20 +13,21 @@ if nargin >= 1
             stSystemSettings.fCalibrationFrequency = 1000;
             stSystemSettings.mfOutInChannelList    = [0 3; 1 4 ]; % starting with 0
             stSystemSettings.mfCrossChannelList    = [0 4; 1 3 ]; % starting with 0, for cross talk evaluation
-            stSystemSettings.vfExpFrequencyRange   = [400 22000];  % the important frequency region
+            stSystemSettings.vfExpFrequencyRange   = [100 15000];  % the important frequency region
+            stSystemSettings.nOldEqualFilterOrder  = 300;             
             stSystemSettings.nEqualFilterOrder     = 128;             
             stSystemSettings.nSamplingFrequency    = fs;
-            stSystemSettings.fSweepStartFrequency  = 200;
+            stSystemSettings.fSweepStartFrequency  = 50;
             stSystemSettings.fSweepRate            = 1;             % octaves/second
             stSystemSettings.nRepeats              = 10;
             stSystemSettings.sDeviceCode           = 'Hammerfall DSP';
             stSystemSettings.MicrophoneCal         = {
-                'low', 132.15
-                '-10', 132.15
-                '+4',  140.93
-                'mid', 140.93
-                'Hi',  146.93
-                'high',146.93
+                'low', 93.15
+                '-10', 93.15
+                '+4',  101.93
+                'mid', 101.93
+                'Hi',  107.93
+                'high',107.93
                 'El',    2
                 'el',    2
                 '0',     0
