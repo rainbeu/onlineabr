@@ -177,7 +177,9 @@ semilogx(handles.axRightFFT,stSetup.f_Hz,Spec(:,1),'b-',...
 mx = max(reshape(Spec(stSetup.f_Hz>400&stSetup.f_Hz<20000,:),[],1));
 mn = min(reshape(Spec(stSetup.f_Hz>400&stSetup.f_Hz<20000,:),[],1));
 if ~isnan(mx) && ~isinf(mx) && ~isnan(mn) && ~isinf(mn)
-    set(handles.axRightFFT,'xlim',[200 stSetup.Fs/2],'ylim',[mn-15 mx+15],'xscale','log','ytick',0:3:100);
+    set(handles.axRightFFT,'xlim',[200 stSetup.Fs/2],'ylim',[mn-15 mx+15],'xscale','log','ytick',-100:10:100);
+else
+    set(handles.axRightFFT,'xlim',[200 stSetup.Fs/2],'xscale','log','ytick',-100:10:100);
 end
 drawnow;
 ITDix = get(handles.popITD,'Value');
