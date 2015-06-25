@@ -10,8 +10,23 @@ stS.Msg = 'Start';
 bRunning = true;
 fid = -1;
 
-InputScalingFactor_uV = 10^(2/20)/1e4*2*sqrt(2)/1e-6;
-MicScaling_Pa = 2e-5/1e-6*10^(2/20);
+% InputScalingFactor_uV = 10^(2/20)/1e4*2*sqrt(2)/1e-6;
+InputScalingFactor_uV = 1/(Hw.PhysAmp_GainFactor ...
+                          * Hw.SoundCard_In_Impedance/(Hw.SoundCard_In_Impedance+Hw.PhysAmp_Out_Impedance) ...
+                          * Hw.SoundCardVoltToSample) ...
+                          /1e-6;
+
+% MicScaling_Pa = 2e-5/1e-6*10^(2/20);
+if isempty(Hw.Mic_Cal_Value)
+    MicScaling_Pa = 1/(2e-5 * Hw.Mic_PascalToVolt ...
+                         * Hw.MicAmp_In_Impedance/(Hw.MicAmp_In_Impedance+Hw.Mic_Out_Impedance) ...
+                         * Hw.MicAmp_GainFactor ...
+                         * Hw.SoundCard_In_Impedance/(Hw.SoundCard_In_Impedance+Hw.MicAmp_Out_Impedance) ...
+                         * Hw.SoundCardVoltToSample);
+else
+    MicScaling_Pa = 10^(Hw.Mic_Cal_Value/20);
+end
+
 [fb,fa] = butter(4,[300 3000]/fs*2);
 
 
@@ -270,6 +285,11 @@ RightIdx = 2;
 
 mx = 0;
 
+ArtefactCounter = 0;
+TriggerWrongCounter = 0;
+PreTimeTooShort = false;
+PostTimeTooShort = false;
+
 Conditions = nan((Rc.MaxRepsPerCond*2)*(length(St.ITD)+2)*length(St.ILD),4);
 
 %% data file
@@ -346,7 +366,7 @@ while bRunning && min(AvgC(:)) < Rc.MaxRepsPerCond
             
             CutOut = EEG(stimstart+IdxVec);
             
-            if max(abs(CutOut)) < Rc.ArtefactThr
+            if ~Rc.RejectArtefacts || max(abs(CutOut)) < Rc.ArtefactThr
                 
                 AvgC(lastitdidx,lastildidx)  = AvgC(lastitdidx,lastildidx) + 1;
                 Delta                        = CutOut - Avg(:,lastitdidx,lastildidx);
@@ -358,6 +378,7 @@ while bRunning && min(AvgC(:)) < Rc.MaxRepsPerCond
             else
                 
                 Conditions(counter,4) = 0;
+                ArtefactCounter = ArtefactCounter + 1;
                 
             end
             
@@ -365,6 +386,16 @@ while bRunning && min(AvgC(:)) < Rc.MaxRepsPerCond
             Delta                          = lastsign*MicScaling_Pa*[recording(stimstart+IdxVec,Rc.MicCh),lastsignal(512+(1:length(IdxVec)),4:5)] - Mic(:,:,lastitdidx,lastildidx);
             Mic(:,:,lastitdidx,lastildidx) = Mic(:,:,lastitdidx,lastildidx) + Delta/MicC(lastitdidx,lastildidx);
             
+        else
+            
+            if stimstart+min(IdxVec) >= 1
+                PreTimeTooShort = true;
+            end
+            if stimstart+max(IdxVec) <= length(EEG)
+                PostTimeTooShort = true;
+            end
+            TriggerWrongCounter = TriggerWrongCounter + 1; 
+             
         end
         
         
@@ -485,6 +516,20 @@ while bRunning && min(AvgC(:)) < Rc.MaxRepsPerCond
         Data(:,5:6) = Mic(:,1:2,BinIdx,ILDix);
         Data(:,7:8) = Mic(:,3:4,BinIdx,ILDix);
         [bRunning,ITDix,ILDix] = OnlineABR(sDisplayCallback,stS,Data,TimeOffset);
+        
+        if ArtefactCounter > 0
+            fprintf('artefacts rejected: %1.0f\n', ArtefactCounter);
+        end
+        if TriggerWrongCounter > 0
+            fprintf('triggers not found: %1.0f\n', TriggerWrongCounter);
+            if PreTimeTooShort 
+                fprintf('pre time too short\n');
+            end
+            if PostTimeTooShort 
+                fprintf('post time too short\n');
+            end
+        end
+        
         LastTime = Time;
         
     end

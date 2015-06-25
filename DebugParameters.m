@@ -4,8 +4,8 @@ handles.Setup.DisplayTime         = 1;  % display is updated every ... seconds
 % handles.Setup.Hardware.DryRun     = true;
 handles.Setup.Hardware.DryRun     = false;
 
-handles.Setup.Hardware.PlayDev    = 40; % ASIO
-handles.Setup.Hardware.RecDev     = 40; % ASIO
+handles.Setup.Hardware.PlayDev    = 0; % ASIO
+handles.Setup.Hardware.RecDev     = 0; % ASIO
 handles.Setup.Hardware.PlayCh     = 6;
 handles.Setup.Hardware.RecCh      = 6;
 handles.Setup.Hardware.BufferSize = 0;
@@ -70,8 +70,8 @@ handles.Setup.Recording.ExtraSmp    = 3000;
 handles.Setup.Recording.PreTime     = 0.101;
 handles.Setup.Recording.RecTime     = 0.150;
 
-handles.Setup.Recording.ArtefactThr = 25000; % µV
-handles.Setup.Recording.RejectArtefacts = true;
+handles.Setup.Recording.ArtefactThr = 5e-3; % µV
+handles.Setup.Recording.RejectArtefacts = false;
 
 handles.Setup.Recording.MaxRepsPerCond = 5000;
 
