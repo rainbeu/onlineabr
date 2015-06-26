@@ -38,6 +38,7 @@ else
     nRepeats = stS.nRepeats;
 end
 sDeviceCode = stS.sDeviceCode;
+sHostAPI = stS.sHostAPI;
 
 idx = find(strcmpi(sSwitchSetting,stS.MicrophoneCal(:,1)));
 if isempty(idx)
@@ -55,6 +56,7 @@ end
 
 vstSoundDevices = playrec('getDevices');
 stUsedDevice = vstSoundDevices(cellfun(@(x)~isempty(strfind(x,sDeviceCode)),{vstSoundDevices.name}));
+stUsedDevice = stUsedDevice(cellfun(@(x)~isempty(strfind(x,sHostAPI)),{stUsedDevice.hostAPI}));
 if isempty(stUsedDevice)
     error('RME card not found');
 end
@@ -119,9 +121,13 @@ for nChannelIdx = 1:size(mfOutInChannelList,1)
         semilogx(1/nDistortionOrder*vfFrequencyAxis(vbPlotIdx), db(abs(mfSpectra(vbPlotIdx,nDistortionOrder)))+fMicrophoneSensLevel,'color',csPlotColorList{nDistortionOrder});
         hold on
         grid on
-	if nDistortionOrder == 1
-	    vfShortIR = vfFullImpulseResponse(vnDistortionPartIndex(:,nDistortionOrder),nChannelIdx);
-	end
+        if nDistortionOrder == 1
+%             fspec = (0:length(vfFullImpulseResponse)-1).'/length(vfFullImpulseResponse)*nSamplingFrequency;
+%             fspec(fspec>=nSamplingFrequency/2) = fspec(fspec>=nSamplingFrequency/2) - nSamplingFrequency;
+%             tmp = real(ifft(fft(vfFullImpulseResponse(:,nChannelIdx)).*(abs(fspec)>=vfExpFrequencyRange(1)&abs(fspec)<=vfExpFrequencyRange(2))));
+%             vfShortIR = tmp(vnDistortionPartIndex(:,nDistortionOrder),nChannelIdx);
+            vfShortIR = vfFullImpulseResponse(vnDistortionPartIndex(:,nDistortionOrder),nChannelIdx);
+        end
     end
     legend({'linear response','1st order harmonic','2nd order harmonic'},'location','northwest');
     drawnow;
@@ -136,7 +142,7 @@ for nChannelIdx = 1:size(mfOutInChannelList,1)
 
     mfFilterCoeffs(:,nChannelIdx) = arburg(vfShortIR,nEqualFilterOrder);
     [H,F] = freqz(mfFilterCoeffs(:,nChannelIdx),1,2^16,nSamplingFrequency);
-    mfFilterCoeffs(:,nChannelIdx) = mfFilterCoeffs(:,nChannelIdx)/interp1(F,abs(H),fCalibrationFrequency);
+    mfFilterCoeffs(:,nChannelIdx) = -mfFilterCoeffs(:,nChannelIdx)/interp1(F,abs(H),fCalibrationFrequency);
     
     nRecPage = playrec('playrec',vfSinusSignal,mfOutInChannelList(nChannelIdx,1)+1,length(vfSinusSignal),mfOutInChannelList(nChannelIdx,2)+1);
     fWaitbarHandle = waitbar(0,'playing sine tone');

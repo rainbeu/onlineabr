@@ -8,12 +8,12 @@ if nargin >= 1
         
         case 'quickcalibrator'
             %% QuickCalibrator
-            stSystemSettings.fChirpAmp             = 0.03;
-            stSystemSettings.fCalibrationSinusAmp  = 0.03;
-            stSystemSettings.fCalibrationFrequency = 1000;
+            stSystemSettings.fChirpAmp             = 0.1;
+            stSystemSettings.fCalibrationSinusAmp  = 0.1;
+            stSystemSettings.fCalibrationFrequency = 4000;
             stSystemSettings.mfOutInChannelList    = [0 3; 1 4 ]; % starting with 0
             stSystemSettings.mfCrossChannelList    = [0 4; 1 3 ]; % starting with 0, for cross talk evaluation
-            stSystemSettings.vfExpFrequencyRange   = [100 15000];  % the important frequency region
+            stSystemSettings.vfExpFrequencyRange   = [500 16500];  % the important frequency region
             stSystemSettings.nOldEqualFilterOrder  = 300;             
             stSystemSettings.nEqualFilterOrder     = 128;             
             stSystemSettings.nSamplingFrequency    = fs;
@@ -21,6 +21,7 @@ if nargin >= 1
             stSystemSettings.fSweepRate            = 1;             % octaves/second
             stSystemSettings.nRepeats              = 10;
             stSystemSettings.sDeviceCode           = 'Hammerfall DSP';
+            stSystemSettings.sHostAPI              = 'ASIO';
             stSystemSettings.MicrophoneCal         = {
                 'low', 93.15
                 '-10', 93.15
@@ -36,17 +37,18 @@ if nargin >= 1
                 'buk', 106
                 'probe', 122
                 'gras',  143.938
+                'ma3_40', 96.179
                 };
             stSystemSettings.MicFilter(4097,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 0;
             stSystemSettings.MicFilter(1,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 1;
-            if exist('ER-7C B-1000.mat','file')
-                load 'ER-7C B-1000.mat' flt
-                stSystemSettings.MicFilter(:,4) = flt(:);
-            end
-            if exist('ER-7C B-1048.mat','file')
-                load 'ER-7C B-1048.mat' flt
-                stSystemSettings.MicFilter(:,5) = flt(:);
-            end
+%             if exist('ER-7C B-1000.mat','file')
+%                 load 'ER-7C B-1000.mat' flt
+%                 stSystemSettings.MicFilter(:,4) = flt(:);
+%             end
+%             if exist('ER-7C B-1048.mat','file')
+%                 load 'ER-7C B-1048.mat' flt
+%                 stSystemSettings.MicFilter(:,5) = flt(:);
+%             end
             
         case 'analyserawdata'
             %% AnalyseRawData

@@ -4,15 +4,13 @@ handles.Setup.DisplayTime         = 1;  % display is updated every ... seconds
 % handles.Setup.Hardware.DryRun     = true;
 handles.Setup.Hardware.DryRun     = false;
 
-handles.Setup.Hardware.PlayDev    = 40; % ASIO
-handles.Setup.Hardware.RecDev     = 40; % ASIO
+handles.Setup.Hardware.PlayDev    = 42; % ASIO
+handles.Setup.Hardware.RecDev     = 42; % ASIO
 handles.Setup.Hardware.PlayCh     = 6;
 handles.Setup.Hardware.RecCh      = 6;
 handles.Setup.Hardware.BufferSize = 0;
 
-handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_owl_better_2014-05-28.mat';
-handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_fake_0000-00-00.mat';
-handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_ABR_mouse_2014-09-17.mat';
+handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_test_2015-06-26.mat';
 
 handles.Setup.Hardware.LevelCorrection = [-0 0];
 handles.Setup.Hardware.StimCh     = [1 2];
@@ -83,9 +81,9 @@ handles.Setup.Hardware.PhysAmp_Out_Impedance = 600; % Ohm
 handles.Setup.Hardware.MicAmp_Out_Impedance = 5; % Ohm
 handles.Setup.Hardware.MicAmp_In_Impedance = 600; % Ohm
 handles.Setup.Hardware.MicAmp_GainFactor = 10^(40/20); % linear
-handles.Setup.Hardware.PhysAmp_GainFactor = 10000; % linear
+handles.Setup.Hardware.PhysAmp_GainFactor = 1000; % linear
 handles.Setup.Hardware.Mic_Out_Impedance = 4400; % Ohm
 handles.Setup.Hardware.Mic_PascalToVolt = 10^(-53.5/20)*1.0/0.1; % Knowles FG-23329
 % handles.Setup.Hardware.Mic_Cal_Value = [];
-handles.Setup.Hardware.Mic_Cal_Value = 96; % add to dB FS to get dB SPL
+handles.Setup.Hardware.Mic_Cal_Value = 96.179; % add to dB FS to get dB SPL
 

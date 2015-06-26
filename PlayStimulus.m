@@ -44,6 +44,8 @@ end
 
 N = round(St.Duration*fs);
 
+masker = [0 0]; 
+
 switch St.Type
     case 'tone'
         stimulus = sin(2*pi*St.Frequency*(0:N-1).'/fs);
@@ -120,18 +122,20 @@ switch St.Type
         f(f>=fs/2) = f(f>=fs/2) - fs;
         masker = real(ifft(bsxfun(@times,fft(masker),abs(abs(f)-St.CenterFreq) < St.BandWidth)));
         masker = bsxfun(@rdivide,masker,std(masker));
-        switch St.MaskerSide
-            case 'L'
-                masker(:,2) = 0;
-            case 'R'
-                masker(:,1) = 0;
-            case 'L+R'
-        end
+
         mRMS = 0;
         
         stimulus = sin(2*pi*St.Frequency*(0:N-1).'/fs);
         RMS = db(std(stimulus(1:N,:),1));
         TimeOffset = 0;
+
+        
+    otherwise
+        error('unsupported stimulus type: %s',St.Type);
+end
+
+switch St.PresentationType
+    case 'simple binaural'
         switch St.StimulusSide
             case 'L'
                 stimulus(:,2) = 0;
@@ -139,11 +143,14 @@ switch St.Type
                 stimulus(:,1) = 0;
             case 'L+R'
         end
-        
-    otherwise
-        error('unsupported stimulus type: %s',St.Type);
+        switch St.MaskerSide
+            case 'L'
+                masker(:,2) = 0;
+            case 'R'
+                masker(:,1) = 0;
+            case 'L+R'
+        end
 end
-
 
 %% stimulus windowing
 
@@ -170,6 +177,10 @@ switch St.Type
         end
         mWin = [W(1:end/2);ones(round(St.MaskerDuration*fs)-length(W),1);W(end/2+1:end)];
         MaskerSamples = length(mWin);
+    otherwise
+        MaskerSamples = length(stimulus);
+        masker = zeros(MaskerSamples,2);
+        mWin = zeros(MaskerSamples,1);
 end
 
 %% stimulus time delay
@@ -331,7 +342,7 @@ fwrite(fid,InputScalingFactor_uV,'double');
 
 %% play/rec loop
 
-while bRunning && min(AvgC(:)) < Rc.MaxRepsPerCond
+while bRunning && (all(AvgC==0) || min(AvgC(AvgC>0)) < Rc.MaxRepsPerCond)
     
     % get recording
     if lastpage >= 0 && all([lastitdidx lastildidx] > 0)
@@ -498,10 +509,10 @@ while bRunning && min(AvgC(:)) < Rc.MaxRepsPerCond
                 R = real(ifft(fft(Avg(:,RightIdx,ILDix)).*exp(-1i*2*pi*f*(-St.ITD(ITDix)/2))));
             case 'simple binaural'
                 BinIdx = ITDix;
-                stS.Msg   = sprintf('Epochs: %1.0f (%1.0f)\nAvg. Period: %5.2f +/- %5.2f ms\nMax: %1.3f\nStd: %1.3f\nITD: %1.0f µs\nILD: %1.1f dB',...
-                    counter,min(AvgC(:)),...
+                stS.Msg   = sprintf('Epochs: %1.0f (%1.0f)\nAvg. Period: %5.2f +/- %5.2f ms\nMax: %1.3f\nStd: %1.3f\nStim Level: %1.1f dB\nMasker Level: %1.1f dB',...
+                    counter,min(AvgC(AvgC>0)),...
                     AvgPeriod/1e-3,sqrt(VarPeriod/counter)/1e-3,mx,sqrt(max(max(Var(:,BinIdx,ILDix)).'./AvgC(BinIdx,ILDix))),...
-                    St.ITD(ITDix)/1e-6,St.ILD(ILDix));
+                    St.ITD(ITDix),St.ILD(ILDix));
                 Data(1:size(Avg,1),1) = 0;
                 Data(1:size(Avg,1),2) = 0;
                 Data(1:size(Avg,1),3) = Avg(:,BinIdx,ILDix);
@@ -556,21 +567,52 @@ end
 
 
 %% display final result
-BinIdx   = ITDix+2;
-stS.Msg   = sprintf('Epochs: %1.0f\nLeft: %1.0f\nRight: %1.0f\nBin.: %1.0f\nAvg. Period: %5.2f +/- %5.2f ms\nMax: %1.3f\nStd: %1.3f\nITD: %1.0f µs\nILD: %1.1f dB',...
-    counter,AvgC(LeftIdx,ILDix),AvgC(RightIdx,ILDix),AvgC(BinIdx,ILDix),...
-    AvgPeriod/1e-3,sqrt(VarPeriod/counter)/1e-3,mx,sqrt(max(max(Var(:,[LeftIdx RightIdx ITDix],ILDix)).'./AvgC([LeftIdx RightIdx ITDix],ILDix))),...
-    St.ITD(ITDix)/1e-6,St.ILD(ILDix));
-Data(1:size(Avg,1),LeftIdx) = Avg(:,LeftIdx      ,ILDix);
-Data(1:size(Avg,1),RightIdx) = Avg(:,RightIdx      ,ILDix);
-Data(1:size(Avg,1),3) = Avg(:,BinIdx,ILDix);
-L = real(ifft(fft(Avg(:,LeftIdx ,ILDix)).*exp(-1i*2*pi*f*(+St.ITD(ITDix)/2))));
-R = real(ifft(fft(Avg(:,RightIdx,ILDix)).*exp(-1i*2*pi*f*(-St.ITD(ITDix)/2))));
-Data(1:size(Avg,1),4)   = Avg(:,BinIdx,ILDix)-(L+R);
+
+switch St.PresentationType
+    case 'L/R/B'
+        BinIdx   = ITDix+2;
+        stS.Msg   = sprintf('Epochs: %1.0f (%1.0f)\nLeft: %1.0f\nRight: %1.0f\nBin.: %1.0f\nAvg. Period: %5.2f +/- %5.2f ms\nMax: %1.3f\nStd: %1.3f\nITD: %1.0f µs\nILD: %1.1f dB',...
+            counter,min(AvgC(:)),AvgC(LeftIdx,ILDix),AvgC(RightIdx,ILDix),AvgC(BinIdx,ILDix),...
+            AvgPeriod/1e-3,sqrt(VarPeriod/counter)/1e-3,mx,sqrt(max(max(Var(:,[LeftIdx RightIdx ITDix],ILDix)).'./AvgC([LeftIdx RightIdx ITDix],ILDix))),...
+            St.ITD(ITDix)/1e-6,St.ILD(ILDix));
+        Data(1:size(Avg,1),LeftIdx)  = Avg(:,LeftIdx      ,ILDix);
+        Data(1:size(Avg,1),RightIdx) = Avg(:,RightIdx      ,ILDix);
+        Data(1:size(Avg,1),3)        = Avg(:,BinIdx,ILDix);
+        
+        L = real(ifft(fft(Avg(:,LeftIdx ,ILDix)).*exp(-1i*2*pi*f*(+St.ITD(ITDix)/2))));
+        R = real(ifft(fft(Avg(:,RightIdx,ILDix)).*exp(-1i*2*pi*f*(-St.ITD(ITDix)/2))));
+    case 'simple binaural'
+        BinIdx = ITDix;
+        stS.Msg   = sprintf('Epochs: %1.0f (%1.0f)\nAvg. Period: %5.2f +/- %5.2f ms\nMax: %1.3f\nStd: %1.3f\nStim Level: %1.1f dB\nMasker Level: %1.1f dB',...
+            counter,min(AvgC(AvgC>0)),...
+            AvgPeriod/1e-3,sqrt(VarPeriod/counter)/1e-3,mx,sqrt(max(max(Var(:,BinIdx,ILDix)).'./AvgC(BinIdx,ILDix))),...
+            St.ITD(ITDix),St.ILD(ILDix));
+        Data(1:size(Avg,1),1) = 0;
+        Data(1:size(Avg,1),2) = 0;
+        Data(1:size(Avg,1),3) = Avg(:,BinIdx,ILDix);
+        
+        L = 0;
+        R = 0;
+end
+Data(1:size(Avg,1),4)        = Avg(:,BinIdx,ILDix)-(L+R);
+Data(1:size(Avg,1),9)        = L+R;
+
 Data(:,5:6) = Mic(:,1:2,BinIdx,ILDix);
 Data(:,7:8) = Mic(:,3:4,BinIdx,ILDix);
 [bRunning,ITDix,ILDix] = OnlineABR(sDisplayCallback,stS,Data,TimeOffset);
 
+if ArtefactCounter > 0
+    fprintf('artefacts rejected: %1.0f\n', ArtefactCounter);
+end
+if TriggerWrongCounter > 0
+    fprintf('triggers not found: %1.0f\n', TriggerWrongCounter);
+    if PreTimeTooShort
+        fprintf('pre time too short\n');
+    end
+    if PostTimeTooShort
+        fprintf('post time too short\n');
+    end
+end
 
 
 
