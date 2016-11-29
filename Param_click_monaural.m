@@ -1,16 +1,16 @@
 
 handles.Setup.Stimulus.Level                 = 0;      % dB SPL after calibration
-handles.Setup.Stimulus.StimulusLevelOffsets  = [10 20 40 60 80];   % dB re stimulus level ("Level")
+handles.Setup.Stimulus.StimulusLevelOffsets  = [20 30 40 45 50 55 60 65];   % dB re stimulus level ("Level")
 
 handles.Setup.Stimulus.Duration     = 0.010;
 handles.Setup.Stimulus.Type         = 'click'; % 'tone', 'wave', 'click'
 handles.Setup.Stimulus.Window       = 'none';
 
 %%
-handles.Setup.Recording.ArtefactThr          = 20;      % µV
-handles.Setup.Recording.RejectArtefacts = false; % true: reject artefacts above threshold, false: do not reject artefacts at all
+handles.Setup.Recording.ArtefactThr     = 30;      % µV
+handles.Setup.Recording.RejectArtefacts = true; % true: reject artefacts above threshold, false: do not reject artefacts at all
 
-handles.Setup.Recording.MaxRepsPerCond       = 100;
+handles.Setup.Recording.MaxRepsPerCond       = 200;
 
 
 %%

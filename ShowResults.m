@@ -1,7 +1,6 @@
 filelist = {
-    'datafile_2015-06-26-12-16-39.mat'
-    'datafile_2015-06-26-12-18-11.mat'
-    'datafile_2015-06-26-12-19-20.mat'
+    'GLCZ11_Tone2k_Pre-surgery_2015-07-02-11-29-37.mat'
+ 
     };
 
 for fx = 1:length(filelist)

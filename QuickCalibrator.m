@@ -45,6 +45,12 @@ if isempty(idx)
     error('please use one of the following input settings: %s',sprintf('%s/',stS.MicrophoneCal{:,1}));
 else
     fMicrophoneSensLevels = stS.MicrophoneCal{idx,2};
+    if strcmp(sSwitchSetting, 'em23046');
+        MicFilter = stS.MicFilter;
+    else
+        MicFilter(4097,1:max(stS.mfOutInChannelList(:,2))+1) = 0;
+        MicFilter(1,1:max(stS.mfOutInChannelList(:,2))+1) = 1;
+    end
 end
 
 
@@ -96,6 +102,7 @@ for nChannelIdx = 1:size(mfOutInChannelList,1)
     end
     close(fWaitbarHandle);
     vfRecordedSignal = mean(reshape(double(playrec('getRec',nRecPage)),[],nRepeats),2);
+    vfRecordedSignal = fftfilt(MicFilter(:, mfOutInChannelList(nChannelIdx,2)+1), vfRecordedSignal);
     
     vfFullImpulseResponse(:,nChannelIdx) = ifft(fft(vfRecordedSignal)./fft(vfChirpSignal));
     if strcmpi(sSwitchSetting,'probe')

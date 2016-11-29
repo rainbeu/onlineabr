@@ -4,13 +4,14 @@ handles.Setup.DisplayTime         = 1;  % display is updated every ... seconds
 % handles.Setup.Hardware.DryRun     = true;
 handles.Setup.Hardware.DryRun     = false;
 
-handles.Setup.Hardware.PlayDev    = 42; % ASIO
-handles.Setup.Hardware.RecDev     = 42; % ASIO
+handles.Setup.Hardware.PlayDev    = 10; % ASIO was 42 until 2015/07/21, new RME driver
+handles.Setup.Hardware.RecDev     = 10; % ASIO was 42 until 2015/07/21, new RME driver
 handles.Setup.Hardware.PlayCh     = 6;
 handles.Setup.Hardware.RecCh      = 6;
 handles.Setup.Hardware.BufferSize = 0;
 
-handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_test_2015-06-26.mat';
+% handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_OG1_terminal_right_2016-11-20.mat';
+handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_OG3_preOuabain_2nd_2016-11-29.mat';
 
 handles.Setup.Hardware.LevelCorrection = [-0 0];
 handles.Setup.Hardware.StimCh     = [1 2];
@@ -43,8 +44,8 @@ handles.Setup.Stimulus.UseSignSwapping = false;
 % handles.Setup.Stimulus.PresentationType      = 'L/R/B';
 handles.Setup.Stimulus.PresentationType      = 'simple binaural';
 
-handles.Setup.Stimulus.StimulusSide = 'L'; % 'R', 'L+R'
-handles.Setup.Stimulus.MaskerSide = 'L'; % 'R', 'L+R'
+handles.Setup.Stimulus.StimulusSide = 'L'; %'L', 'L+R'
+handles.Setup.Stimulus.MaskerSide = 'L'; %'L', 'L+R'
 
 handles.Setup.Stimulus.BufferLen             = 2^16;  % samples
 handles.Setup.Stimulus.IAC                   = 1;      % interaural correlation of masker

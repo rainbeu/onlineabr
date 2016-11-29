@@ -8,12 +8,13 @@ if nargin >= 1
         
         case 'quickcalibrator'
             %% QuickCalibrator
-            stSystemSettings.fChirpAmp             = 0.1;
-            stSystemSettings.fCalibrationSinusAmp  = 0.1;
+            stSystemSettings.fChirpAmp             = 0.01; % was 0.1, eq -20 dB, 0.03 is -10 dB 
+            stSystemSettings.fCalibrationSinusAmp  = 0.01; % was 0.1, eq -20 dB 
             stSystemSettings.fCalibrationFrequency = 4000;
             stSystemSettings.mfOutInChannelList    = [0 3; 1 4 ]; % starting with 0
             stSystemSettings.mfCrossChannelList    = [0 4; 1 3 ]; % starting with 0, for cross talk evaluation
-            stSystemSettings.vfExpFrequencyRange   = [500 16500];  % the important frequency region
+            stSystemSettings.vfExpFrequencyRange   = [100 16500];  % the important frequency region
+%             stSystemSettings.vfExpFrequencyRange   = [500 16500];  % old values changed on 2016-11-29
             stSystemSettings.nOldEqualFilterOrder  = 300;             
             stSystemSettings.nEqualFilterOrder     = 128;             
             stSystemSettings.nSamplingFrequency    = fs;
@@ -37,18 +38,19 @@ if nargin >= 1
                 'buk', 106
                 'probe', 122
                 'gras',  143.938
-                'ma3_40', 96.179
+                'ma3_40', 96.179 % old microphone calibration (Knowles FG-23329)
+                'em23046', 94.6109 % new microphone calibration from Tytology (Knowles EM-23046)
                 };
             stSystemSettings.MicFilter(4097,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 0;
             stSystemSettings.MicFilter(1,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 1;
-%             if exist('ER-7C B-1000.mat','file')
-%                 load 'ER-7C B-1000.mat' flt
-%                 stSystemSettings.MicFilter(:,4) = flt(:);
-%             end
-%             if exist('ER-7C B-1048.mat','file')
-%                 load 'ER-7C B-1048.mat' flt
-%                 stSystemSettings.MicFilter(:,5) = flt(:);
-%             end
+            if exist('left_filter.mat','file')
+                load 'left_filter.mat' coeffs_left
+                stSystemSettings.MicFilter(:,4) = coeffs_left(:);
+            end
+            if exist('right_filter.mat','file')
+                load 'right_filter.mat' coeffs_right
+                stSystemSettings.MicFilter(:,5) = coeffs_right(:);
+            end
             
         case 'analyserawdata'
             %% AnalyseRawData

@@ -134,24 +134,6 @@ switch St.Type
         error('unsupported stimulus type: %s',St.Type);
 end
 
-switch St.PresentationType
-    case 'simple binaural'
-        switch St.StimulusSide
-            case 'L'
-                stimulus(:,2) = 0;
-            case 'R'
-                stimulus(:,1) = 0;
-            case 'L+R'
-        end
-        switch St.MaskerSide
-            case 'L'
-                masker(:,2) = 0;
-            case 'R'
-                masker(:,1) = 0;
-            case 'L+R'
-        end
-end
-
 %% stimulus windowing
 
 R = round(St.RampDur*fs)*2;
@@ -248,6 +230,24 @@ switch St.PresentationType
         St.ITD = St.StimulusLevelOffsets;
 end
 
+%% switch off unused channels
+switch St.PresentationType
+    case 'simple binaural'
+        switch St.StimulusSide
+            case 'L'
+                stimulus(:,2) = 0;
+            case 'R'
+                stimulus(:,1) = 0;
+            case 'L+R'
+        end
+        switch St.MaskerSide
+            case 'L'
+                masker(:,2) = 0;
+            case 'R'
+                masker(:,1) = 0;
+            case 'L+R'
+        end
+end
 
 %% trigger
 trigger = zeros(size(stimulus,1),1);
@@ -342,7 +342,7 @@ fwrite(fid,InputScalingFactor_uV,'double');
 
 %% play/rec loop
 
-while bRunning && (all(AvgC==0) || min(AvgC(AvgC>0)) < Rc.MaxRepsPerCond)
+while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
     
     % get recording
     if lastpage >= 0 && all([lastitdidx lastildidx] > 0)
@@ -494,6 +494,13 @@ while bRunning && (all(AvgC==0) || min(AvgC(AvgC>0)) < Rc.MaxRepsPerCond)
     
     % display data
     if all([ITDix ILDix]>0) && (Time-LastTime) > stS.DisplayTime
+        
+        % OnlineABR display function uses the stS structure, which
+        % which needs to be updated with local placeholders
+        stS.Stimulus  = St;
+        stS.Hardware  = Hw;
+        stS.Recording = Rc;
+
         switch St.PresentationType
             case 'L/R/B'
                 BinIdx   = ITDix+2;

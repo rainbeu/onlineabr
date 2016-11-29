@@ -2,4 +2,9 @@
 data/**
 *.orig
 Eq*.mat
+*.dat
+*.mat
+backup_param_file/**
+exp_toolbox/**
+playrec/**
 
