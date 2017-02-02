@@ -1,6 +1,6 @@
 
 handles.Setup.Stimulus.Level                 = 0;      % dB SPL after calibration
-handles.Setup.Stimulus.StimulusLevelOffsets  = [0:5:60];   % dB re stimulus level ("Level")
+handles.Setup.Stimulus.StimulusLevelOffsets  = [0:5:65];   % dB re stimulus level ("Level")
 
 handles.Setup.Stimulus.Duration     = 0.010;
 handles.Setup.Stimulus.Type         = 'wave'; 

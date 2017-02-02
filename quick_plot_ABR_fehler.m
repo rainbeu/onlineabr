@@ -1,12 +1,13 @@
-function quick_plot_ABR(datafile)
+function quick_plot_ABR_fehler(datafile)
 
 load(datafile)
-
+%%
 flt = fir1(1024,[300 3000]/48000*2);
 
 c = 1;
 for k=1:size(Mic(:,:),2);
-    if max(abs(Mic(:,k))) > std(Mic(:,k));
+    if    max(abs(Mic(:,k)))/max(abs(Mic(:))) > 1e-3... 
+       && max(abs(Mic(:,k))) > 10*median(abs(Mic(:,k)));
         tmp=find(Mic(:,k)>0.9*max(Mic(:,k)),1,'first');
         if ~isempty(tmp) && tmp > 1;
             idx(c,1) = tmp;
@@ -16,7 +17,8 @@ for k=1:size(Mic(:,:),2);
 end
 
 idx = median(idx);
-
+%%
+figure('units','normalized','position',[0 0 1 1])
 % ABR traces
 subplot(1,2,1)
 plot(((0:size(Avg,1)-1+1024)-512-idx).'/48000/1e-3,bsxfun(@plus,fftfilt(flt,[Avg(:,1:end-2);zeros(1024,size(Avg,2)-2)])*10,St.StimulusLevelOffsets-St.Level));
@@ -25,7 +27,7 @@ ylim([min(St.StimulusLevelOffsets-St.Level)-10;max(St.StimulusLevelOffsets-St.Le
 line([0;0],[min(St.StimulusLevelOffsets-St.Level)-10;max(St.StimulusLevelOffsets-St.Level)+10], 'color', [0.5 0.5 0.5], 'linestyle', '--');
 xlabel('time / ms');
 ylabel('Level');
-
+%%
 % mic recordings
 subplot(1,2,2)
 plot(((0:size(Mic,1)-1+1024)-idx).'/48000/1e-3,bsxfun(@plus,[squeeze(Mic(:,1,1:end-2));zeros(1024,size(Mic,3)-2)]*10/max(abs(Mic(:))),St.StimulusLevelOffsets-St.Level));

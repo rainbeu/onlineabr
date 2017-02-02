@@ -1,7 +1,7 @@
 
 handles.Setup.Stimulus.Level                 = 0;      % dB SPL after calibration
-handles.Setup.Stimulus.StimulusLevelOffsets  = [30:5:80];   % dB re stimulus level ("Level")
-handles.Setup.Stimulus.Frequency    = 1000;
+handles.Setup.Stimulus.StimulusLevelOffsets  = [15:5:65];   % dB re stimulus level ("Level")
+handles.Setup.Stimulus.Frequency    = 8000;
 
 handles.Setup.Stimulus.Duration     = 0.005;
 handles.Setup.Stimulus.Type         ='tone';

@@ -11,7 +11,7 @@ handles.Setup.Hardware.RecCh      = 6;
 handles.Setup.Hardware.BufferSize = 0;
 
 % handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_OG1_terminal_right_2016-11-20.mat';
-handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_OG3_preOuabain_2nd_2016-11-29.mat';
+handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_OG7_right_CAP_2017-01-31.mat';
 
 handles.Setup.Hardware.LevelCorrection = [-0 0];
 handles.Setup.Hardware.StimCh     = [1 2];
@@ -44,8 +44,8 @@ handles.Setup.Stimulus.UseSignSwapping = false;
 % handles.Setup.Stimulus.PresentationType      = 'L/R/B';
 handles.Setup.Stimulus.PresentationType      = 'simple binaural';
 
-handles.Setup.Stimulus.StimulusSide = 'L'; %'L', 'L+R'
-handles.Setup.Stimulus.MaskerSide = 'L'; %'L', 'L+R'
+handles.Setup.Stimulus.StimulusSide = 'R'; %'L', 'L+R'
+handles.Setup.Stimulus.MaskerSide = 'R'; %'L', 'L+R'
 
 handles.Setup.Stimulus.BufferLen             = 2^16;  % samples
 handles.Setup.Stimulus.IAC                   = 1;      % interaural correlation of masker

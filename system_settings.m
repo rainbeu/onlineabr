@@ -13,7 +13,8 @@ if nargin >= 1
             stSystemSettings.fCalibrationFrequency = 4000;
             stSystemSettings.mfOutInChannelList    = [0 3; 1 4 ]; % starting with 0
             stSystemSettings.mfCrossChannelList    = [0 4; 1 3 ]; % starting with 0, for cross talk evaluation
-            stSystemSettings.vfExpFrequencyRange   = [100 16500];  % the important frequency region
+            stSystemSettings.vfExpFrequencyRange   = [250 16500];  % the important frequency region (from 2017-01-30)
+%             stSystemSettings.vfExpFrequencyRange   = [100 16500];  % the important frequency region (up to 2017-01-30)
 %             stSystemSettings.vfExpFrequencyRange   = [500 16500];  % old values changed on 2016-11-29
             stSystemSettings.nOldEqualFilterOrder  = 300;             
             stSystemSettings.nEqualFilterOrder     = 128;             
@@ -40,6 +41,7 @@ if nargin >= 1
                 'gras',  143.938
                 'ma3_40', 96.179 % old microphone calibration (Knowles FG-23329)
                 'em23046', 94.6109 % new microphone calibration from Tytology (Knowles EM-23046)
+                'er-7c_ma3_40', 87.88 % Etymotic ER-7C  via +40 dB on TDT MA3 amplifier in RME Multiface @ -10dBV
                 };
             stSystemSettings.MicFilter(4097,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 0;
             stSystemSettings.MicFilter(1,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 1;
@@ -50,6 +52,10 @@ if nargin >= 1
             if exist('right_filter.mat','file')
                 load 'right_filter.mat' coeffs_right
                 stSystemSettings.MicFilter(:,5) = coeffs_right(:);
+            end
+            if exist('ER-7C B-1128.mat','file')
+                load 'ER-7C B-1128.mat' flt
+                stSystemSettings.MicFilter(1:length(flt(:)),6) = flt(:);
             end
             
         case 'analyserawdata'

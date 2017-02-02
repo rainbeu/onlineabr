@@ -45,11 +45,14 @@ if isempty(idx)
     error('please use one of the following input settings: %s',sprintf('%s/',stS.MicrophoneCal{:,1}));
 else
     fMicrophoneSensLevels = stS.MicrophoneCal{idx,2};
-    if strcmp(sSwitchSetting, 'em23046');
-        MicFilter = stS.MicFilter;
-    else
-        MicFilter(4097,1:max(stS.mfOutInChannelList(:,2))+1) = 0;
-        MicFilter(1,1:max(stS.mfOutInChannelList(:,2))+1) = 1;
+    switch sSwitchSetting
+        case 'em23046'
+            MicFilter = stS.MicFilter;
+        case 'er-7c_ma3_40'
+            MicFilter(:,4:5) = stS.MicFilter(:,[6 6]);
+        otherwise
+            MicFilter(4097,1:max(stS.mfOutInChannelList(:,2))+1) = 0;
+            MicFilter(1,1:max(stS.mfOutInChannelList(:,2))+1) = 1;
     end
 end
 
@@ -117,6 +120,8 @@ for nChannelIdx = 1:size(mfOutInChannelList,1)
     
     nCutLength = 2^nextpow2(2*nLatency);
     vfFrequencyAxis = (0:nCutLength-1).'/nCutLength*nSamplingFrequency;
+    vnDistortionPartIndex = zeros(nCutLength, 3);
+    mfSpectra = zeros(nCutLength, 3);
     figure(1)
     subplot(size(mfOutInChannelList,1),1,nChannelIdx);
     cla
