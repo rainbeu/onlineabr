@@ -40,6 +40,12 @@ end
 sDeviceCode = stS.sDeviceCode;
 sHostAPI = stS.sHostAPI;
 
+if isfield(stS,'sFilterType')
+    sFilterType = stS.sFilterType;
+else
+    sFilterType = 'minphase';
+end
+
 idx = find(strcmpi(sSwitchSetting,stS.MicrophoneCal(:,1)));
 if isempty(idx)
     error('please use one of the following input settings: %s',sprintf('%s/',stS.MicrophoneCal{:,1}));
@@ -87,6 +93,12 @@ vfSinusSignal = fCalibrationSinusAmp*[zeros(nSamplingFrequency/10,1);...
                                       zeros(nSamplingFrequency/10,1)];
 bBP = fir1(1024,fCalibrationFrequency*2.^([-1 1]*1/6)/nSamplingFrequency*2);
 
+
+nPreLength = round(2e-3*nSamplingFrequency);
+nCutLength = 2^nextpow2(10e-3*nSamplingFrequency);
+vfFrequencyAxis = (0:nCutLength-1).'/nCutLength*nSamplingFrequency;
+
+
 for nChannelIdx = 1:size(mfOutInChannelList,1)
     
     if length(fMicrophoneSensLevels) > mfOutInChannelList(nChannelIdx,2)+1
@@ -108,7 +120,7 @@ for nChannelIdx = 1:size(mfOutInChannelList,1)
     vfRecordedSignal = fftfilt(MicFilter(:, mfOutInChannelList(nChannelIdx,2)+1), vfRecordedSignal);
     
     vfFullImpulseResponse(:,nChannelIdx) = ifft(fft(vfRecordedSignal)./fft(vfChirpSignal));
-    if strcmpi(sSwitchSetting,'probe')
+    if strcmpi(sSwitchSetting,'probe') || strcmpi(sSwitchSetting,'knowles')
         Tmp = fftfilt(stS.MicFilter(:,mfOutInChannelList(nChannelIdx,2)+1),[vfFullImpulseResponse(:,nChannelIdx);zeros(size(stS.MicFilter,1),1)]);
         vfFullImpulseResponse(:,nChannelIdx) = Tmp(ceil(size(stS.MicFilter,1)/2)+(0:length(vfFullImpulseResponse)-1));
     end
@@ -117,9 +129,7 @@ for nChannelIdx = 1:size(mfOutInChannelList,1)
     if nLatency > 4*nBufferLen
         nLatency = 4*nBufferLen;
     end
-    
-    nCutLength = 2^nextpow2(2*nLatency);
-    vfFrequencyAxis = (0:nCutLength-1).'/nCutLength*nSamplingFrequency;
+
     vnDistortionPartIndex = zeros(nCutLength, 3);
     mfSpectra = zeros(nCutLength, 3);
     figure(1)
@@ -144,17 +154,34 @@ for nChannelIdx = 1:size(mfOutInChannelList,1)
     legend({'linear response','1st order harmonic','2nd order harmonic'},'location','northwest');
     drawnow;
 
-    vfFilterAmplitudes = 1./abs(mfSpectra(:,1));
-    vfFilterAmplitudes = vfFilterAmplitudes/max(vfFilterAmplitudes(vfFrequencyAxis>vfExpFrequencyRange(1)&vfFrequencyAxis<vfExpFrequencyRange(2)));  
-    % new 2013-06-18
-    vfFilterAmplitudes = vfFilterAmplitudes / interp1(vfFrequencyAxis,vfFilterAmplitudes,fCalibrationFrequency);
-    vfFilterAmplitudes(vfFrequencyAxis<=vfExpFrequencyRange(1)|vfFrequencyAxis>=vfExpFrequencyRange(2)) = 1;
-    vfFilterAmplitudes(isnan(vfFilterAmplitudes)|isinf(vfFilterAmplitudes)) = 1;
-    mfOldFilterCoeffs(:,nChannelIdx) = fir2(nEqualFilterOrder,vfFrequencyAxis(vfFrequencyAxis<=nSamplingFrequency/2)/nSamplingFrequency*2,vfFilterAmplitudes(vfFrequencyAxis<=nSamplingFrequency/2));
+    switch sFilterType
+        case 'linear'
+            vfFilterAmplitudes = 1./abs(mfSpectra(:,1));
+            vfFilterAmplitudes = vfFilterAmplitudes/max(vfFilterAmplitudes(vfFrequencyAxis>vfExpFrequencyRange(1)&vfFrequencyAxis<vfExpFrequencyRange(2)));  
+            % new 2013-06-18
+            vfFilterAmplitudes = vfFilterAmplitudes / interp1(vfFrequencyAxis,vfFilterAmplitudes,fCalibrationFrequency);
+            vfFilterAmplitudes(vfFrequencyAxis<=vfExpFrequencyRange(1)|vfFrequencyAxis>=vfExpFrequencyRange(2)) = 1;
+            vfFilterAmplitudes(isnan(vfFilterAmplitudes)|isinf(vfFilterAmplitudes)) = 1;
+            mfFilterCoeffs(:,nChannelIdx) = fir2(nEqualFilterOrder,vfFrequencyAxis(vfFrequencyAxis<=nSamplingFrequency/2)/nSamplingFrequency*2,vfFilterAmplitudes(vfFrequencyAxis<=nSamplingFrequency/2));
+            % mfOldFilterCoeffs(:,nChannelIdx) = fir2(nEqualFilterOrder,vfFrequencyAxis(vfFrequencyAxis<=nSamplingFrequency/2)/nSamplingFrequency*2,vfFilterAmplitudes(vfFrequencyAxis<=nSamplingFrequency/2));
+        case 'minphase'
+            % invert spectrum
+            vfFilterAmplitudes = 1./abs(mfSpectra(:,1));
+            % normalize spectrum
+            vfFilterAmplitudes = vfFilterAmplitudes / interp1(vfFrequencyAxis,vfFilterAmplitudes,fCalibrationFrequency);
 
-    mfFilterCoeffs(:,nChannelIdx) = arburg(vfShortIR,nEqualFilterOrder);
-    [H,F] = freqz(mfFilterCoeffs(:,nChannelIdx),1,2^16,nSamplingFrequency);
-    mfFilterCoeffs(:,nChannelIdx) = -mfFilterCoeffs(:,nChannelIdx)/interp1(F,abs(H),fCalibrationFrequency);
+            % set spectrum to meaningful values outside frequency limits
+            vfFilterAmplitudes(vfFrequencyAxis<=vfExpFrequencyRange(1)) = vfFilterAmplitudes(find(vfFrequencyAxis>vfExpFrequencyRange(1), 1, 'first'));
+            vfFilterAmplitudes(vfFrequencyAxis>=vfExpFrequencyRange(2)) = vfFilterAmplitudes(find(vfFrequencyAxis<vfExpFrequencyRange(2), 1, 'last'));
+            vfFilterAmplitudes(isnan(vfFilterAmplitudes)|isinf(vfFilterAmplitudes)) = 0;
+            
+            % calculate phases for minimum phase filter
+            mfFilterCoeffs(:,nChannelIdx) = real(ifft(vfFilterAmplitudes .* exp(1i* -imag(hilbert(log(abs(vfFilterAmplitudes)))))));
+        case 'autoregressive'
+            mfFilterCoeffs(:,nChannelIdx) = arburg(vfShortIR,nEqualFilterOrder);
+            [H,F] = freqz(mfFilterCoeffs(:,nChannelIdx),1,2^16,nSamplingFrequency);
+            mfFilterCoeffs(:,nChannelIdx) = mfFilterCoeffs(:,nChannelIdx)/interp1(F,abs(H),fCalibrationFrequency);
+    end
     
     nRecPage = playrec('playrec',vfSinusSignal,mfOutInChannelList(nChannelIdx,1)+1,length(vfSinusSignal),mfOutInChannelList(nChannelIdx,2)+1);
     fWaitbarHandle = waitbar(0,'playing sine tone');
@@ -182,8 +209,8 @@ for nChannelIdx = 1:size(mfOutInChannelList,1)
 end
 
 save(sprintf('EqFiltCoeff_%s_%s.mat',sExpName,datestr(now,'yyyy-mm-dd')),'mfFilterCoeffs','nSamplingFrequency','mfOutInChannelList','vfMaxSPL','fCalibrationFrequency','fMicrophoneSensLevels');
-mfFilterCoeffs = mfOldFilterCoeffs;
-save(sprintf('EqFiltCoeff_%s_%s_DONOTUSEFORABR.mat',sExpName,datestr(now,'yyyy-mm-dd')),'mfFilterCoeffs','nSamplingFrequency','mfOutInChannelList','vfMaxSPL','fCalibrationFrequency','fMicrophoneSensLevels');
+%mfFilterCoeffs = mfOldFilterCoeffs;
+%save(sprintf('EqFiltCoeff_%s_%s_DONOTUSEFORABR.mat',sExpName,datestr(now,'yyyy-mm-dd')),'mfFilterCoeffs','nSamplingFrequency','mfOutInChannelList','vfMaxSPL','fCalibrationFrequency','fMicrophoneSensLevels');
 save(sprintf('EqImpResp_%s_%s.mat',sExpName,datestr(now,'yyyy-mm-dd')),'vfFullImpulseResponse','nSamplingFrequency','mfOutInChannelList','vfMaxSPL','fCalibrationFrequency','fMicrophoneSensLevels');
 
 disp('The maximal output levels are:')
