@@ -1,5 +1,7 @@
 function [vfFullImpulseResponse] = QuickCalibrator(sSwitchSetting,sExpName,varargin)
 
+max_filter_gain = 10;
+    
 if ~exist('sExpName','var') || isempty(sExpName)
     sExpName = '';
 end
@@ -97,6 +99,7 @@ bBP = fir1(1024,fCalibrationFrequency*2.^([-1 1]*1/6)/nSamplingFrequency*2);
 nPreLength = round(2e-3*nSamplingFrequency);
 nCutLength = 2^nextpow2(10e-3*nSamplingFrequency);
 vfFrequencyAxis = (0:nCutLength-1).'/nCutLength*nSamplingFrequency;
+vfFrequencyAxis(vfFrequencyAxis>=nSamplingFrequency/2) = vfFrequencyAxis(vfFrequencyAxis>=nSamplingFrequency/2) - nSamplingFrequency;
 
 
 for nChannelIdx = 1:size(mfOutInChannelList,1)
@@ -136,7 +139,7 @@ for nChannelIdx = 1:size(mfOutInChannelList,1)
     subplot(size(mfOutInChannelList,1),1,nChannelIdx);
     cla
     for nDistortionOrder = 1:3;
-        vnDistortionPartIndex(:,nDistortionOrder) = round(-nSamplingFrequency*(log2(nDistortionOrder)/fSweepRate)) + (1:nCutLength).'; 
+        vnDistortionPartIndex(:,nDistortionOrder) = nLatency - nPreLength + round(-nSamplingFrequency*(log2(nDistortionOrder)/fSweepRate)) + (1:nCutLength).'; 
         vnDistortionPartIndex(vnDistortionPartIndex(:,nDistortionOrder)<1,nDistortionOrder)=length(vfFullImpulseResponse(:,nChannelIdx))+vnDistortionPartIndex(vnDistortionPartIndex(:,nDistortionOrder)<1,nDistortionOrder);
         mfSpectra(:,nDistortionOrder) = fft(hann(nCutLength).*vfFullImpulseResponse(vnDistortionPartIndex(:,nDistortionOrder),nChannelIdx));
         vbPlotIdx = vfFrequencyAxis < nSamplingFrequency/2/nDistortionOrder;
@@ -160,27 +163,37 @@ for nChannelIdx = 1:size(mfOutInChannelList,1)
             vfFilterAmplitudes = vfFilterAmplitudes/max(vfFilterAmplitudes(vfFrequencyAxis>vfExpFrequencyRange(1)&vfFrequencyAxis<vfExpFrequencyRange(2)));  
             % new 2013-06-18
             vfFilterAmplitudes = vfFilterAmplitudes / interp1(vfFrequencyAxis,vfFilterAmplitudes,fCalibrationFrequency);
-            vfFilterAmplitudes(vfFrequencyAxis<=vfExpFrequencyRange(1)|vfFrequencyAxis>=vfExpFrequencyRange(2)) = 1;
+            
+            % limit spectrum to maximal filter gain
+            vfFilterAmplitudes = min(vfFilterAmplitudes, max_filter_gain);
+            
+            vfFilterAmplitudes(abs(vfFrequencyAxis)<=vfExpFrequencyRange(1)|abs(vfFrequencyAxis)>=vfExpFrequencyRange(2)) = 1;
             vfFilterAmplitudes(isnan(vfFilterAmplitudes)|isinf(vfFilterAmplitudes)) = 1;
             mfFilterCoeffs(:,nChannelIdx) = fir2(nEqualFilterOrder,vfFrequencyAxis(vfFrequencyAxis<=nSamplingFrequency/2)/nSamplingFrequency*2,vfFilterAmplitudes(vfFrequencyAxis<=nSamplingFrequency/2));
             % mfOldFilterCoeffs(:,nChannelIdx) = fir2(nEqualFilterOrder,vfFrequencyAxis(vfFrequencyAxis<=nSamplingFrequency/2)/nSamplingFrequency*2,vfFilterAmplitudes(vfFrequencyAxis<=nSamplingFrequency/2));
         case 'minphase'
             % invert spectrum
             vfFilterAmplitudes = 1./abs(mfSpectra(:,1));
+            
             % normalize spectrum
             vfFilterAmplitudes = vfFilterAmplitudes / interp1(vfFrequencyAxis,vfFilterAmplitudes,fCalibrationFrequency);
 
+            % limit spectrum to maximal filter gain
+            vfFilterAmplitudes = min(vfFilterAmplitudes, max_filter_gain);
+
             % set spectrum to meaningful values outside frequency limits
-            vfFilterAmplitudes(vfFrequencyAxis<=vfExpFrequencyRange(1)) = vfFilterAmplitudes(find(vfFrequencyAxis>vfExpFrequencyRange(1), 1, 'first'));
-            vfFilterAmplitudes(vfFrequencyAxis>=vfExpFrequencyRange(2)) = vfFilterAmplitudes(find(vfFrequencyAxis<vfExpFrequencyRange(2), 1, 'last'));
+            vfFilterAmplitudes(abs(vfFrequencyAxis)<=vfExpFrequencyRange(1)) = vfFilterAmplitudes(find(vfFrequencyAxis>vfExpFrequencyRange(1), 1, 'first'));
+            vfFilterAmplitudes(abs(vfFrequencyAxis)>=vfExpFrequencyRange(2)) = vfFilterAmplitudes(find(vfFrequencyAxis<vfExpFrequencyRange(2), 1, 'last'));
             vfFilterAmplitudes(isnan(vfFilterAmplitudes)|isinf(vfFilterAmplitudes)) = 0;
             
             % calculate phases for minimum phase filter
-            mfFilterCoeffs(:,nChannelIdx) = real(ifft(vfFilterAmplitudes .* exp(1i* -imag(hilbert(log(abs(vfFilterAmplitudes)))))));
+            phase = ifftshift(imag(hilbert(log(abs(fftshift(vfFilterAmplitudes))))));
+            mfFilterCoeffs(:,nChannelIdx) = real(ifft(vfFilterAmplitudes .* exp(-1i*phase)));
         case 'autoregressive'
             mfFilterCoeffs(:,nChannelIdx) = arburg(vfShortIR,nEqualFilterOrder);
             [H,F] = freqz(mfFilterCoeffs(:,nChannelIdx),1,2^16,nSamplingFrequency);
             mfFilterCoeffs(:,nChannelIdx) = mfFilterCoeffs(:,nChannelIdx)/interp1(F,abs(H),fCalibrationFrequency);
+            
     end
     
     nRecPage = playrec('playrec',vfSinusSignal,mfOutInChannelList(nChannelIdx,1)+1,length(vfSinusSignal),mfOutInChannelList(nChannelIdx,2)+1);
