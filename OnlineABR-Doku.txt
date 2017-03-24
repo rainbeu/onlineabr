@@ -1,0 +1,203 @@
+OnlineABR
+=========
+
+Dateien:
+
+OnlineABR.fig        :  GUI
+OnlineABR.m          :  GUI Callbacks, hauptsächlich trivial, Darstellungs-
+                        Funktionen, Artefakt-Schwellen-Messung
+PlayStimulus.m       :  Haupt-Skript für die Messung
+DefaultParameters.m  :  Setzt die Basiseinstellungen für die Messung in
+                        den handles.Setup-Strukturbaum. Wird immer zuerst
+                        geladen, kann durch Überschreiben mit einer
+                        weiteren "Param....m"-Datei ergänzt werden
+
+
+Grober Ablauf in PlayStimulus.m (siehe auch %%-Sections)
+--------------------------------------------------------
+
+1. Einige generelle Parameter werden gesetzt, insbesondere Hardware-Umrechnungen
+
+2. Die Soundkarte wird initialisiert
+
+3. Der Roh-Stimulus (d.h. ohne Pegelskalierung, ITD, ILD, etc.) wird
+   generiert oder geladen
+
+4. Der Roh-Stimulus wird ggf. mit einem Fenster auf die richtige tatsächliche
+   Länge zurechtgeschnitten, insgesamt bleibt der Stimulus aber mit Null-Samples
+   so lang wie generiert
+
+5. Ggf. wird ein generelles Delay eingefügt, falls ein Maskierer vorhergehen soll
+
+6a. Die Daten aus der Kalibriermessung werden geladen und angepasst
+6b. Der Stimulus wird auf den richtigen Pegel skaliert
+6c. Der Stimulus wird für zum Ausgleich der Lautsprecher-Übertragung gefiltert
+
+7. Zeitverschobene Kopien des Stimulus für die ITD werden berechnet
+
+8. Weitere Hilfsvariablen für den Ablauf werden gesetzt oder initialisiert
+
+9. Ein Null-Signal wird in die Warteschlange der Soundkarte geschickt,
+   als Vorlauf für die eigentlichen Signale (d.h., um Zeit für die
+   Vorbereitung des ersten eigentlichen Stimulus zu haben, "double-buffering")
+
+10. Die Datei für die Rohdaten wird vorbereitet
+
+11. Die Mess-Schleife (bis Abbruch per GUI oder genügend Wiederholungen gemessen wurden)
+
+11a. Letzte verfügbare Aufnahme holen, Rohdaten in Datei schreiben,
+     exaktes Timing über Triggersignal detektieren,
+     in ABR/EEG- und Mic-Teile auftrennen,
+     iterativ Mittelwert und Varianz berechnen
+
+11b. Nächsten Stimulus vorbereiten: ggf. ILD skalieren,
+     zufälliger Vorzeichenwechsel (gegen Artefakte)
+     Stimulus mit richtiger ITD-Verzögerung für links und rechts wählen
+     Stimulus in die Warteschlange der Soundkarte schicken
+     Statusdaten aufbereiten und per Callback an die GUI schicken
+
+12. noch ein letztes Mal Update der GUI-Daten
+
+13. Aufräumen
+
+
+Die wichtigsten Variablen:
+--------------------------
+
+stS  :  Setup-Struktur aus DefaultParameters.m etc.
+Hw   :  Hardware-Teil der Setup-Struktur
+St   :  Stimulus-Teil der Setup-Struktur
+Rc   :  Recording-Teil der Setup-Struktur
+
+stimulus   :   Template des zu spielenden Stimulus, davon werden Versionen
+               mit anderem Pegel, ILD, ITD abgeleitet
+RMS        :   nomineller (digitaler) Pegel des stimulus, darauf basiert
+               die spätere Berechnung des Ausgabepegels im System
+TimeOffset :   zeitlicher Referenzpunkt des eigentlichen Stimulus in "stimulus"
+               (in Sekunden). Ändert sich insbesondere bei generellen Verschiebungen
+masker     :   enthält ggf. einen zusätzlichen Maskierer, der vor dem
+               Stimulus abgespielt wird
+shiftstim  :   für ITD zeitlich verschobene Kopien von stimulus
+trigger    :   Triggerimpuls ab TimeOffset, Länge ca. 1 ms. Wird per
+               Loop-Kabel mit aufgenommen
+IdxVec     :   Sample-Indizes des zu verarbeitenden Teils innerhalb der
+               Aufnahmepuffer (ein bisschen vor und nach dem Stimulus inklusive
+               der System-Verzögerung)
+signal     :   tatsächlich an die Soundkarte übergebenes Signal (inkl. ITD, ILD, etc.)               
+
+Für folgende Variablen gilt: ITD-Index ist: 1 = monaural links, 2 = monaural rechts, 3... = ITD-Index in der Reihenfolge von St.ITD
+Avg        :   gemitteltes ABR (Dimensionen: 1. Samples, 2. ITD-Index, 3. ILD-Index)
+Var        :   Varianz ABR (Dimensionen: 1. Samples, 2. ITD-Index, 3. ILD-Index)
+AvgC       :   Anzahl gemittelter Epochen Avg  (Dimensionen: 1. ITD-Index, 2. ILD-Index)               
+Mic        :   gemitteltes Mikrofonsignal (Dimensionen: 1. Samples, 2. Kanal, 3. ITD-Index, 4. ILD-Index)
+               Kanal = 1. links, 2. rechts, 3. intern links, 4. intern rechts (d.h. ohne Akustik)
+MicC       :   Anzahl gemittelter Epochen Mic  (Dimensionen: 1. ITD-Index, 2. ILD-Index)               
+
+page, lastpage :   Handle-Nummern der Sound-Puffer von playrec, werden benutzt, um Aufnahmen abzuholen
+
+Conditions  :   Liste der tatsächlich abgespielten Konditionen (kann für die Rohdaten-Datei benutzt werden)
+
+st.Msd, Data  :   Daten, die an die GUI zur Darstellung geschickt werden
+
+
+Setup-Struktur:
+---------------
+
+Die meisten Settings werden nur abgefragt wenn benötigt, sonst ignoriert.
+
+Fs                  :   Samplingfrequenz des Systems
+DisplayTime         :   Update-Häufigkeit der GUI in Sekunden
+
+Hardware.DryRun     :   true = Experiment ohne echte Soundhardware testen
+Hardware.PlayDev    :   Device-Nummer des Soundkartenausgangs (in jedem Rechner anders)
+Hardware.RecDev     :   Device-Nummer des Soundkartenausgangs (in jedem Rechner anders)
+Hardware.PlayCh     :   Maximale Anzahl von Abspielkanälen
+Hardware.RecCh      :   Maximale Anzahl von Aufnahmekanälen
+Hardware.BufferSize :   Größe des (internen) Soundkartenpuffers in Samples. Kann
+                        meistens 0 bleiben, dann automatische Einstellung
+Hardware.CalFile    :   Dateiname der Kalibrierdatei. Wird von "QuickCalibrator" erstellt
+Hardware.LevelCorrection  :  ggf. Pegelkorrekturoffsets [ links rechts ] in dB 
+Hardware.StimCh           :  Stimulus-Abspielkanäle [ links rechts ]
+Hardware.TrgCh            :  Trigger-Abspielkanal
+
+====> Elektrische Daten des Soundkarte/Verstärker/Mikrofon-Systems
+Hardware.SoundCardVoltToSample = 1/1.780; % 1/Volt
+Hardware.SoundCard_In_Impedance = 10000; % Ohm
+Hardware.PhysAmp_Out_Impedance = 600; % Ohm
+Hardware.MicAmp_Out_Impedance = 5; % Ohm
+Hardware.MicAmp_In_Impedance = 600; % Ohm
+Hardware.MicAmp_GainFactor = 10^(40/20); % linear
+Hardware.PhysAmp_GainFactor = 10000; % linear
+Hardware.Mic_Out_Impedance = 4400; % Ohm
+Hardware.Mic_PascalToVolt = 10^(-53.5/20)*1.0/0.1; % Knowles FG-23329
+Hardware.Mic_Cal_Value = 96; % add to dB FS to get dB SPL
+
+Recording.FileName    :   Dateiname-Prefix (mit Verzeichnis) für die Rohdaten. Wird mit Datum/Uhrzeit und Nummer ergänzt
+Recording.EEGCh       :   Aufnahmekanal für EEG/ABR
+Recording.MicCh       :   Aufnahmekanalpaar für Mikrofone [ links rechts ]
+Recording.TrgCh       :   Aufnahmekanal für Trigger-Loop
+Recording.ExtraSmp    :   Wieviele Samples nach Abspielen der Signale noch extra aufgenommen werden
+                          (z.B. wegen akustischer und digitaler Zeitverzögerung)
+Recording.PreTime     :   Aufnahmezeit vor dem Stimulus (in Sekunden)
+Recording.RecTime     :   Aufnahmezeit ab Beginn des Stimulus (in Sekunden) 
+Recording.ArtefactThr :  Artefaktschwelle in µV, lässt sich über GUI aktuell per Mausklick festlegen
+Recording.RejectArtefacts    :   Sollen Artfakte (d.h. alle Epoche mit mindestens einem Sample > Schwelle)
+                                 überhaupt aus der Mittelung herausgenommen werden? (true/false)
+Recording.MaxRepsPerCond  :   Anzahl der mindestens pro Kondition artefaktfrei aufzunehmender Epochen
+
+
+
+Stimulus.Duration        :   Länge des Stimulus in Sekunden
+Stimulus.Type            :   Stimulus-Typ (entsprechend switch-Block in PlayStimulus)
+                             kann beliebig ergänzt werden
+Stimulus.Frequency       :   Stimulus-Frequenz 
+Stimulus.ModulationDepth :   Modulationsfrequenz (bei Amplitudenmodulationen)
+Stimulus.Fs              :   Stimulus-Samplingfrequenz (ist nahezu immer gleich System-Fs)
+Stimulus.FileName        :   Dateiname für Stimulus von Platte
+Stimulus.FileTimeOffset  :   Beginn des Stimulus in der Datei in Sekunden
+Stimulus.SampleFormat    :   bei "raw"-Dateien: Datenformat der Samples in der Datei (z.B. 'int16')
+Stimulus.FileCh          :   Anzahl der Kanäle in der Datei (bei "raw")
+Stimulus.bDoResample     :   bei Fs-Mismatch: resamplen (true) oder Fehlermeldung (false)
+Stimulus.RampDur         :   Dauer der On- bzw. Offset-Rampen (Fensterung) in Sekunden
+Stimulus.Window          :   Art der Fensterung ('hann' oder 'none', kann ergänzt werden)
+Stimulus.Level           :   Abspielpegel (Referenz)
+
+Stimulus.ITD    :   Liste von ITD-Werten, die gemessen werden sollen (in Sekunden)
+Stimulus.ILD    :   Liste von ILD-Werten, die gemessen werden sollen (in dB)
+====> es werden alle Kombinationen gemessen
+
+Stimulus.LevelThreshold  :   Workaround für monaurale Pegel-Schwellen:
+                                    - auf true setzen
+                                    - Stimulus.Level = 0
+                                    - Stimulus.ILD = List der Pegel in dB SPL
+
+Stimulus.UseSignSwapping :   zufällige Vorzeichen der Abpsiel-Signale verwenden?
+                             wenn ja, mitteln sich elektrische Artefakte und
+                             Signale aus der Cochlea über die Zeit raus.
+
+Stimulus.PresentationType  : 'L/R/B' oder 'simple binaural'
+                            ersteres spielt immer auch links/rechts monaural mit ab
+                            letzteres hängt von den StimulusSide und MaskerSide ab
+
+Stimulus.StimulusSide    : 'L', 'R', 'L+R'  Stimulus ausschließlich links, rechts oder binaural abspielen
+Stimulus.MaskerSide      : 'L', 'R', 'L+R'  Masker ausschließlich links, rechts oder binaural abspielen
+
+Stimulus.BufferLen             :   Länge des Masker-Puffers, aus dem zufällig kurze Abschnitte abgespielt werden
+                                   (um quasi-zufälliges Rauschen zu bekommen)
+Stimulus.IAC                   :   Interaurale Korrelation des Maskers
+Stimulus.CenterFreq            :   Mittenfrequenz des Maskers (in Hz)
+Stimulus.BandWidth             :   Bandbreite des Maskers um die Mittenfreqenz (in Hz)
+Stimulus.MaskerLevel           :   Makser-Pegel in dB SPL
+Stimulus.MaskerDuration        :   Länge des Maskers in Sekunden
+Stimulus.StimOnsetDelay        :   Startzeit des Stimulus ab Beginn des Maskers in Sekunden
+Stimulus.MaskerLevelOffsets    :   Liste mit Pegel-Offset-Stufen für den Masker in dB
+Stimulus.StimulusLevelOffsets  :   Liste mit Pegel-Offset-Stufen für den Stimulus in dB
+Stimulus.MaskerRampDur         :   Länge der On- bzw. Offset-Rampen des Maskers
+Stimulus.MaskerFrozen          :   Masker quasi-zufällig machen oder nicht
+
+
+
+
+
+
+
