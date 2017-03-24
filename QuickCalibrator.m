@@ -54,10 +54,6 @@ if isempty(idx)
 else
     fMicrophoneSensLevels = stS.MicrophoneCal{idx,2};
     switch sSwitchSetting
-        case 'em23046'
-            MicFilter = stS.MicFilter;
-        case 'er-7c_ma3_40'
-            MicFilter(:,4:5) = stS.MicFilter(:,[6 6]);
         otherwise
             MicFilter(4097,1:max(stS.mfOutInChannelList(:,2))+1) = 0;
             MicFilter(1,1:max(stS.mfOutInChannelList(:,2))+1) = 1;
