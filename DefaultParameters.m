@@ -1,19 +1,19 @@
+handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_fake_0000-00-00.mat';
+
+%%
+
 handles.Setup.Fs                  = 48000;
 handles.Setup.DisplayTime         = 1;  % display is updated every ... seconds 
 
-% handles.Setup.Hardware.DryRun     = true;
-handles.Setup.Hardware.DryRun     = false;
+handles.Setup.Hardware.DryRun     = false; % true % for use without actual sound hardware
 
-handles.Setup.Hardware.PlayDev    = 10; % ASIO was 42 until 2015/07/21, new RME driver
-handles.Setup.Hardware.RecDev     = 10; % ASIO was 42 until 2015/07/21, new RME driver
+handles.Setup.Hardware.PlayDev    = 0; % call get_playrec_device_id to obtain these numbers
+handles.Setup.Hardware.RecDev     = 0; % ...
 handles.Setup.Hardware.PlayCh     = 6;
 handles.Setup.Hardware.RecCh      = 6;
 handles.Setup.Hardware.BufferSize = 0;
 
-% handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_OG1_terminal_right_2016-11-20.mat';
-handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_OG7_right_CAP_2017-01-31.mat';
-
-handles.Setup.Hardware.LevelCorrection = [-0 0];
+handles.Setup.Hardware.LevelCorrection = [0 0];
 handles.Setup.Hardware.StimCh     = [1 2];
 handles.Setup.Hardware.TrgCh      = 3;
 
