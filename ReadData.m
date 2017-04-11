@@ -16,6 +16,7 @@ to = fread(fid,1,'double') % stimulus timeoffset within buffer
 sc = fread(fid,1,'double') % scaling factor from digital full scale (0-1) to µV
 
 t=(0:sz-1).'/fs;
+t = t - to;
 m= 0; c = 0;
 
 while ~feof(fid); 
@@ -23,7 +24,13 @@ while ~feof(fid);
     if ~isempty(x)
         for ch = 1:size(x,2)
             subplot(size(x,2),1,ch);
-            plot(t,x(:,ch)); 
+            if ch == 1
+                plot(t, sc*x(:,ch)); 
+                ylim([-1.05 1.05]*sc*max(abs(x(:,ch))));
+            else
+                plot(t,    x(:,ch)); 
+                ylim([-1.05 1.05]*max(abs(x(:,ch))));
+            end
         end
         m = m + x;
         c = c + 1;

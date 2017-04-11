@@ -416,7 +416,7 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
     switch St.PresentationType
         case 'L/R/B'
             lastildidx = ildidx;
-            ildidx     = randi(length(St.ILD),1);
+            ildidx     = floor(rand*length(St.ILD))+1; %randi(length(St.ILD),1);
             if ~St.LevelThreshold
                 % positive ILD => softer left (1), louder right (2)
                 LeftILDFactor  = 10^(-St.ILD(ildidx)/2/20);
@@ -426,14 +426,14 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
                 RightILDFactor = 10^(+St.ILD(ildidx)/20);
             end
             lastitdidx = itdidx;
-            itdidx    = randi(length(St.ITD)+2,1);
+            itdidx    = floor(rand*(length(St.ITD)+2))+1; %randi(length(St.ITD)+2,1);
         case 'simple binaural'
             lastildidx = ildidx;
-            ildidx     = randi(length(St.ILD),1);
+            ildidx     = floor(rand*length(St.ILD))+1; %randi(length(St.ILD),1);
             LeftMaskerFactor  = 10^(+St.ILD(ildidx)/20);
             RightMaskerFactor = 10^(+St.ILD(ildidx)/20);
             lastitdidx = itdidx;
-            itdidx    = randi(length(St.ITD),1);
+            itdidx    = floor(rand*length(St.ITD))+1; %randi(length(St.ITD),1);
             LeftStimFactor  = 10^(+St.ITD(itdidx)/20);
             RightStimFactor = 10^(+St.ITD(itdidx)/20);
     end
@@ -465,7 +465,7 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
             if St.MaskerFrozen
                 offset = 0;
             else
-                offset = randi(St.BufferLen-MaskerSamples,1);
+                offset = floor(rand*(St.BufferLen-MaskerSamples))+1; %randi(St.BufferLen-MaskerSamples,1);
             end
             signal(1:MaskerSamples,1) = signal(1:MaskerSamples,1) + LeftMaskerFactor  * mWin .* masker(offset+(1:MaskerSamples),1);
             signal(1:MaskerSamples,2) = signal(1:MaskerSamples,2) + RightMaskerFactor * mWin .* masker(offset+(1:MaskerSamples),2);
