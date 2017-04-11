@@ -5,7 +5,8 @@ handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_fake_0000-00-00.mat';
 handles.Setup.Fs                  = 48000;
 handles.Setup.DisplayTime         = 1;  % display is updated every ... seconds 
 
-handles.Setup.Hardware.DryRun     = false; % true % for use without actual sound hardware
+handles.Setup.Hardware.DryRun     = false; % for use with real sound hardware
+% handles.Setup.Hardware.DryRun     = true; % for use without actual sound hardware
 
 handles.Setup.Hardware.PlayDev    = 0; % call get_playrec_device_id to obtain these numbers
 handles.Setup.Hardware.RecDev     = 0; % ...
@@ -75,17 +76,24 @@ handles.Setup.Recording.RejectArtefacts = true;
 
 handles.Setup.Recording.MaxRepsPerCond = 500;
 
-handles.Setup.Hardware.SoundCardVoltToSample = 1/1.780; % low / -10 dBV
-% handles.Setup.Hardware.SoundCardVoltToSample = 1/4.893; % mid / +4 dBu
-% handles.Setup.Hardware.SoundCardVoltToSample = 1/9.763; % high / Hi Gain
+handles.Setup.Hardware.SoundCardVoltToSample = 1/1.780; % low / -10 dBV Peak
+% handles.Setup.Hardware.SoundCardVoltToSample = 1/4.893; % mid / +4 dBu Peak
+% handles.Setup.Hardware.SoundCardVoltToSample = 1/9.763; % high / Hi Gain Peak
+% handles.Setup.Hardware.SoundCardVoltToSample = 1/1.259; % low / -10 dBV RMS
+% handles.Setup.Hardware.SoundCardVoltToSample = 1/3.460; % mid / +4 dBu RMS
+% handles.Setup.Hardware.SoundCardVoltToSample = 1/6.904; % high / Hi Gain RMS
 handles.Setup.Hardware.SoundCard_In_Impedance = 10000; % Ohm
-handles.Setup.Hardware.PhysAmp_Out_Impedance = 600; % Ohm
-handles.Setup.Hardware.MicAmp_Out_Impedance = 5; % Ohm
-handles.Setup.Hardware.MicAmp_In_Impedance = 600; % Ohm
-handles.Setup.Hardware.MicAmp_GainFactor = 10^(40/20); % linear
-handles.Setup.Hardware.PhysAmp_GainFactor = 1000; % linear
+
+handles.Setup.Hardware.MicAmp_Out_Impedance = 0; % Ohm
+handles.Setup.Hardware.MicAmp_In_Impedance = 1e9; % Ohm
+handles.Setup.Hardware.MicAmp_GainFactor = 10^(0/20); % linear
+
 handles.Setup.Hardware.Mic_Out_Impedance = 4400; % Ohm
-handles.Setup.Hardware.Mic_PascalToVolt = 10^(-53.5/20)*1.0/0.1; % Knowles FG-23329
+% handles.Setup.Hardware.Mic_PascalToVolt = 10^(-53.5/20)*1.0/0.1; % Knowles FG-23329 RMS!
+handles.Setup.Hardware.Mic_PascalToVolt = 10^(-50.5/20)*1.0/0.1; % Knowles FG-23329 Peak!
 handles.Setup.Hardware.Mic_Cal_Value = [];
 % handles.Setup.Hardware.Mic_Cal_Value = 96.179; % add to dB FS to get dB SPL
+
+handles.Setup.Hardware.PhysAmp_Out_Impedance = 600; % Ohm
+handles.Setup.Hardware.PhysAmp_GainFactor = 10000; % linear
 
