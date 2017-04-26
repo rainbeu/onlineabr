@@ -19,7 +19,7 @@ t=(0:sz-1).'/fs;
 t = t - to;
 m= 0; c = 0;
 
-while ~feof(fid); 
+while ~feof(fid) 
     x = reshape(fread(fid,sz*ch,'float32=>double'),ch,[]).'; 
     if ~isempty(x)
         for ch = 1:size(x,2)
@@ -27,6 +27,9 @@ while ~feof(fid);
             if ch == 1
                 plot(t, sc*x(:,ch)); 
                 ylim([-1.05 1.05]*sc*max(abs(x(:,ch))));
+            elseif ch == 3
+                plot(t,    x(:,ch), t, filtfilt(0.3,[1 -0.7],x(:,ch))); 
+                ylim([-1.05 1.05]*max(abs(x(:,ch))));
             else
                 plot(t,    x(:,ch)); 
                 ylim([-1.05 1.05]*max(abs(x(:,ch))));
@@ -51,7 +54,9 @@ while ~feof(fid);
         else
             list{c} = '?';
         end
+        
         pause;
+%         drawnow;
     end
 end
 fclose(fid)

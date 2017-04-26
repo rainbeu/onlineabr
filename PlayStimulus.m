@@ -251,7 +251,7 @@ end
 
 %% trigger
 trigger = zeros(size(stimulus,1),1);
-trigger(round(TimeOffset*fs)+(1:round(0.001*fs))) = 1;
+trigger(round(TimeOffset*fs)+(1:round(0.001*fs))) = 0.1824;  % works with all switch positions on RME Multiface
 
 %% preparation
 
@@ -372,7 +372,8 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
         EEG = EEG - mean(EEG);
         mx = max(mx,max(abs(EEG)));
         
-        stimstart = find(filtfilt(0.3,[1 -0.7],recording(:,Rc.TrgCh)) > 0.5,1,'first');
+        % threshold 0.1 works with all switch positions on RME Multiface
+        stimstart = find(filtfilt(0.3,[1 -0.7],recording(:,Rc.TrgCh)) > 0.1,1,'first');
         
         if ~isempty(stimstart) && stimstart+min(IdxVec) >= 1 && stimstart+max(IdxVec) <= length(EEG)
             
