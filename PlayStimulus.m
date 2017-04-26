@@ -281,12 +281,13 @@ lastpage   = -1;
 page       =  1;
 if ~Hw.DryRun 
     page      = playrec('playrec',[stimulus*0,trigger],[Hw.StimCh Hw.TrgCh],stS.RecSize,1:Hw.RecCh);
+    startpage = page;
 else
 end
 recording = zeros(stS.RecSize,Hw.RecCh);
 signal = 0*stimulus;
 
-lastitdidx = -1; itdidx = -1; lastsign = 1; sign = 1; lastildidx = 0; ildidx = 0;
+lastitdidx = -1; itdidx = -1; lastsign = 1; sign = 1; lastildidx = -1; ildidx = -1;
 stimstart = [];
 ITDix = 1;
 ILDix = 1;
@@ -345,7 +346,7 @@ fwrite(fid,InputScalingFactor_uV,'double');
 while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
     
     % get recording
-    if lastpage >= 0 && all([lastitdidx lastildidx] > 0)
+    if lastpage ~= startpage && lastpage >= 0 && all([lastitdidx lastildidx] > 0)
         
         if ~Hw.DryRun 
             playrec('block',lastpage);
