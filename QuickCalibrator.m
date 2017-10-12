@@ -77,6 +77,9 @@ stUsedDevice = stUsedDevice(cellfun(@(x)~isempty(strfind(x,sHostAPI)),{stUsedDev
 if isempty(stUsedDevice)
     error('RME card not found');
 end
+if length(stUsedDevice) > 1
+    stUsedDevice = stUsedDevice(strcmp({stUsedDevice.name},sDeviceCode));
+end
 if max(mfOutInChannelList(:,1)) > stUsedDevice.outputChans
     error('output channel number mismatch');
 end
@@ -84,7 +87,8 @@ if max(mfOutInChannelList(:,1)) > stUsedDevice.inputChans
     error('input channel number mismatch');
 end
 
-playrec('init',nSamplingFrequency,stUsedDevice.deviceID,stUsedDevice.deviceID,max(mfOutInChannelList(:,1))+1,max(mfOutInChannelList(:,2))+1,nBufferLen);
+% playrec('init',nSamplingFrequency,stUsedDevice.deviceID,stUsedDevice.deviceID,max(mfOutInChannelList(:,1))+1,max(mfOutInChannelList(:,2))+1,nBufferLen);
+playrec('init',nSamplingFrequency,stUsedDevice.deviceID,stUsedDevice.deviceID,max(mfOutInChannelList(:,1))+1,max(mfOutInChannelList(:,2))+1);
 
 fChirpDuration = log(nSamplingFrequency/2/fSweepStartFrequency)/log(2^fSweepRate);
 vfChirpSignal = fChirpAmp           *[zeros(nSamplingFrequency/10,1);...

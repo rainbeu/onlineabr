@@ -74,17 +74,29 @@ handles.Setup.Recording.RejectArtefacts = true;
 
 handles.Setup.Recording.MaxRepsPerCond = 5000;
 
-handles.Setup.Hardware.SoundCardVoltToSample = 1/1.780; % low / -10 dBV
+%% peak voltages
+% handles.Setup.Hardware.SoundCardVoltToSample = 1/1.780; % low / -10 dBV
 % handles.Setup.Hardware.SoundCardVoltToSample = 1/4.893; % mid / +4 dBu
 % handles.Setup.Hardware.SoundCardVoltToSample = 1/9.763; % high / Hi Gain
+%% RMS voltages
+handles.Setup.Hardware.SoundCardVoltToSample = 1/1.259; % low / -10 dBV
+% handles.Setup.Hardware.SoundCardVoltToSample = 1/3.460; % mid / +4 dBu
+% handles.Setup.Hardware.SoundCardVoltToSample = 1/6.904; % high / Hi Gain
+%% 
+handles.Setup.Hardware.MicAmp_GainFactor = 10^(40/20); % linear
+
 handles.Setup.Hardware.SoundCard_In_Impedance = 10000; % Ohm
-handles.Setup.Hardware.PhysAmp_Out_Impedance = 600; % Ohm
 handles.Setup.Hardware.MicAmp_Out_Impedance = 5; % Ohm
 handles.Setup.Hardware.MicAmp_In_Impedance = 600; % Ohm
-handles.Setup.Hardware.MicAmp_GainFactor = 10^(40/20); % linear
-handles.Setup.Hardware.PhysAmp_GainFactor = 1000; % linear
-handles.Setup.Hardware.Mic_Out_Impedance = 4400; % Ohm
-handles.Setup.Hardware.Mic_PascalToVolt = 10^(-53.5/20)*1.0/0.1; % Knowles FG-23329
-% handles.Setup.Hardware.Mic_Cal_Value = [];
-handles.Setup.Hardware.Mic_Cal_Value = 96.179; % add to dB FS to get dB SPL
+% handles.Setup.Hardware.Mic_Out_Impedance = 4400; % Ohm % Knowles microphones
+handles.Setup.Hardware.Mic_Out_Impedance = 235; % Ohm % Etymotic ER-7C probe microphone
+% handles.Setup.Hardware.Mic_PascalToVolt = 10^(-53.5/20)*1.0/0.1; % Knowles FG-23329
+handles.Setup.Hardware.Mic_PascalToVolt = 0.050; % Etymotic ER-7C probe microphone
 
+%% in not empty ([]) only this value will be used, regardless of the more detailed values above
+handles.Setup.Hardware.Mic_Cal_Value = [];
+% handles.Setup.Hardware.Mic_Cal_Value = 96.179; % add to dB FS to get dB SPL
+
+%% 
+handles.Setup.Hardware.PhysAmp_Out_Impedance = 600; % Ohm
+handles.Setup.Hardware.PhysAmp_GainFactor = 1000; % linear
