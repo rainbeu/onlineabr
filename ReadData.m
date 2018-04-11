@@ -24,6 +24,9 @@ while ~feof(fid);
         for ch = 1:size(x,2)
             subplot(size(x,2),1,ch);
             plot(t,x(:,ch)); 
+            figure(2);
+            semilogx((0:4095)/4096*48000,db(fft(x(:,2),4096)));
+            figure(1);
         end
         m = m + x;
         c = c + 1;
@@ -44,7 +47,7 @@ while ~feof(fid);
         else
             list{c} = '?';
         end
-        pause;
+%         pause;
     end
 end
 fclose(fid)
