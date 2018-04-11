@@ -48,9 +48,32 @@ masker = [0 0];
 
 switch St.Type
     case 'tone'
-        stimulus = sin(2*pi*St.Frequency*(0:N-1).'/fs);
+        switch St.Window
+            case { 'ongoing', 'onoffset' }
+                stimulus = sin(2*pi*St.Frequency*(0:2*N-1).'/fs);
+            otherwise
+                stimulus = sin(2*pi*St.Frequency*(0:N-1).'/fs);
+        end
         RMS = db(std(stimulus(1:N,:),1));
         TimeOffset = 0;
+    case 'transposedtone'
+        switch St.Window
+            case { 'ongoing', 'onoffset' }
+                stimulus = sin(2*pi*St.Frequency*(0:2*N-1).'/fs);
+            otherwise
+                stimulus = sin(2*pi*St.Frequency*(0:N-1).'/fs);
+        end
+        RMS = db(std(stimulus(1:N,:),1));
+        TimeOffset = 0;
+        % high-frequency carrier tone
+        carrier = sin(2*pi*St.CarrierFrequency*(0:2*N-1).'/fs);
+        % half wave rectification of modulator
+        stimulus = 0.5 * (abs(stimulus) + stimulus);
+        % low pass filtering of modulator
+        f = (0:length(stimulus)-1).'/length(stimulus)*St.Fs; f(f>=St.Fs/2) = f(f>=St.Fs/2) - St.Fs;
+        stimulus = real(ifft(bsxfun(@times, fft(stimulus), abs(f) <= St.LowPassFrequency)));
+        % modulating modulator on carrier tone
+        % is done after shifting for ITD
     case 'click'
         stimulus = [1;zeros(N-1,1)];
         RMS = -db(sqrt(2));
@@ -140,8 +163,10 @@ R = round(St.RampDur*fs)*2;
 switch St.Window
     case 'none'
         W = [];
-    case 'hann'
+    case { 'hann', 'all' }
         W = hann(R);
+    case { 'ongoing', 'onoffset' }
+        W = [];
     otherwise
         error('unsupported window type: %s',St.Window);
 end
@@ -189,7 +214,11 @@ end
 
 
 %% stimulus level calibration
-stimulus = bsxfun(@times,stimulus,10.^((-MaxSPL(:)+St.Level(:)-RMS(:)+Hw.LevelCorrection(:))/20).');
+switch St.Type
+    case { 'transposedtone' }
+    otherwise
+        stimulus = bsxfun(@times,stimulus,10.^((-MaxSPL(:)+St.Level(:)-RMS(:)+Hw.LevelCorrection(:))/20).');
+end
 switch St.Type
     case 'CAP'
         masker = bsxfun(@times,masker,10.^((-MaxSPL(:)+St.MaskerLevel(:)-mRMS(:)+Hw.LevelCorrection(:))/20).');
@@ -205,6 +234,8 @@ switch St.Type
         TimeOffset = TimeOffset + max(mean(GroupDelay),0);
         masker = fftfilt(CalFilter,[masker;zeros(size(CalFilter,1),size(masker,2))]);
         masker = masker(max(round(mean(GroupDelay)*fs),0)+(1:St.BufferLen),:);
+    case { 'transposedtone' }
+        stimulus = repmat(stimulus, 1, 2);
     otherwise
         stimulus = fftfilt(CalFilter,[stimulus;zeros(size(CalFilter,1),size(stimulus,2))]);
         TimeOffset = TimeOffset + max(mean(GroupDelay),0);
@@ -214,6 +245,13 @@ end
 %% stimulus ITD/ILD preparation
 switch St.PresentationType
     case 'L/R/B'
+        %% TODO!!! window onoffset
+        switch St.Window
+            case { 'onoffset' }
+                W = hann(R);
+                base_stimulus = stimulus;
+                stimulus = repmat([W(1:end/2);ones(N-length(W),1);W(end/2+1:end)],1,2);
+        end
         stimulus = [zeros(ceil(max(abs(St.ITD))*fs),size(stimulus,2));stimulus;zeros(ceil(max(abs(St.ITD))*fs),size(stimulus,2))];
         TimeOffset = TimeOffset + max(abs(St.ITD));
         f = (0:size(stimulus,1)-1).'/size(stimulus,1)*fs;
@@ -225,10 +263,45 @@ switch St.PresentationType
             shiftstim(:,1,tx) = real(ifft(fft(stimulus(:,1)) .* exp(-1i*2*pi*f*(+St.ITD(tx)/2))));
             shiftstim(:,2,tx) = real(ifft(fft(stimulus(:,2)) .* exp(-1i*2*pi*f*(-St.ITD(tx)/2))));
         end
+        switch St.Window
+            case { 'onoffset' }
+                stimulus = bsxfun(@times, stimulus, base_stimulus(N/4+(1:size(stimulus,1)), :));
+                shiftstim = bsxfun(@times, shiftstim, base_stimulus(N/4+(1:size(stimulus,1)), :));
+            case { 'ongoing' }
+                W = hann(R);
+                W = [zeros(ceil(max(abs(St.ITD))*fs),1);W(1:end/2);ones(N-length(W),1);W(end/2+1:end);zeros(ceil(max(abs(St.ITD))*fs),1)];
+                stimulus = bsxfun(@times, W, stimulus(N/4+(1:length(W)), :));
+                shiftstim = bsxfun(@times, W, shiftstim(N/4+(1:length(W)), :, :));
+        end
     case 'simple binaural'
         St.ILD = St.MaskerLevelOffsets;
         St.ITD = St.StimulusLevelOffsets;
 end
+
+%% transposed stimulus generation
+switch St.Type
+    case { 'transposedtone' }
+        stimulus = bsxfun(@times, stimulus, carrier(N/4+(1:size(stimulus,1))));
+        shiftstim = bsxfun(@times, shiftstim, carrier(N/4+(1:size(shiftstim,1))));
+end
+
+%% level calibration for transposed tones
+switch St.Type
+    case { 'transposedtone' }
+        %% TODO!! shiftstim
+        % R = double ramp duration in samples
+        RMS = db(std(stimulus(1+R/2:N-R/2,:),1));
+        stimulus = bsxfun(@times,stimulus,10.^((-MaxSPL(:)+St.Level(:)-RMS(:)+Hw.LevelCorrection(:))/20).');
+        stimulus = fftfilt(CalFilter,[stimulus;zeros(size(CalFilter,1),size(stimulus,2))]);
+        shiftstim = bsxfun(@times, shiftstim, 10.^((-MaxSPL(:)+St.Level(:)-RMS(:)+Hw.LevelCorrection(:))/20).');
+        shiftstim = [shiftstim; zeros(size(CalFilter,1),size(shiftstim,2),size(shiftstim,3))];
+        for k = 1:size(shiftstim, 3)
+            shiftstim(:,:,k) = fftfilt(CalFilter, shiftstim(:,:,k));
+        end
+        TimeOffset = TimeOffset + max(mean(GroupDelay),0);
+    otherwise
+end
+
 
 %% switch off unused channels
 switch St.PresentationType
@@ -279,6 +352,7 @@ MicC = zeros(length(St.ITD)+2,length(St.ILD));
 
 lastpage   = -1;
 page       =  1;
+startpage  =  0;
 if ~Hw.DryRun 
     page      = playrec('playrec',[stimulus*0,trigger],[Hw.StimCh Hw.TrgCh],stS.RecSize,1:Hw.RecCh);
     startpage = page;

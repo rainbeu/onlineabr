@@ -18,9 +18,11 @@ handles.Setup.Hardware.StimCh     = [1 2];
 handles.Setup.Hardware.TrgCh      = 3;
 
 handles.Setup.Stimulus.Duration       = 0.010;
-handles.Setup.Stimulus.Type           = 'click';  % 'tone'; % 'wave'; % 'CAP'; 
+handles.Setup.Stimulus.Type           = 'click';  % 'tone'; % 'wave'; % 'CAP'; % 'transposedtone' 
 handles.Setup.Stimulus.Frequency      = 1000;
 handles.Setup.Stimulus.ModulationDepth = 0;
+handles.Setup.Stimulus.CarrierFrequency = 4000; % for transposedtone
+handles.Setup.Stimulus.LowPassFrequency = 2000; % for transposedtone
 handles.Setup.Stimulus.Fs             = handles.Setup.Fs;
 handles.Setup.Stimulus.FileName       = 'chirp20kHz_48kHz.wav'; 
 handles.Setup.Stimulus.FileTimeOffset = 203/48000;
@@ -28,7 +30,7 @@ handles.Setup.Stimulus.SampleFormat   = 'int16';
 handles.Setup.Stimulus.FileCh         = 1;
 handles.Setup.Stimulus.bDoResample    = false;
 handles.Setup.Stimulus.RampDur        = 0.001;
-handles.Setup.Stimulus.Window         = 'none'; % 'hann';
+handles.Setup.Stimulus.Window         = 'none'; % 'hann'; % 'ongoing'; % 'onoffset'; % 'all';
 handles.Setup.Stimulus.Level          = 60; % dB SPL after calibration
 
 handles.Setup.Stimulus.ITD            = [0] * 1e-6;  % sec.
