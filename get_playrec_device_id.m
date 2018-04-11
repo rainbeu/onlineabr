@@ -21,12 +21,14 @@ function devID = get_playrec_device_id(varargin)
         fprintf('%s\n', apis{:})
         fprintf('\n');
         
-    elseif length(varargin) == 2
-        
-        name = varargin{1};
-        host_api = varargin{2};
-        
     else
+        
+        if length(varargin) == 2
+            
+            name = varargin{1};
+            host_api = varargin{2};
+            
+        end
         
         idx = true(1, length(dev));
         
@@ -61,4 +63,4 @@ function devID = get_playrec_device_id(varargin)
         end
         
     end
-
+    

@@ -61,7 +61,7 @@ DefaultParameters;
 handles.ParamFileName = 'DefaultParameters';
 FileName = uigetfile('*.m','Please select parameter script','DefaultParameters.m');
 if ~isempty(FileName) && ~isnumeric(FileName)
-    [~,name] = fileparts(FileName);
+    [dummy,name] = fileparts(FileName);
     eval(name);
     handles.ParamFileName = name;
 else
@@ -119,7 +119,8 @@ function pbnDelete_Callback(hObject, eventdata, handles)
 function tbnSetup_Callback(hObject, eventdata, handles)
 FileName = uigetfile('*.m','Please select parameter script',[handles.ParamFileName '.m']);
 if ~isempty(FileName) && ~isnumeric(FileName)
-    [~,name] = fileparts(FileName);
+    [dummy,name] = fileparts(FileName);
+    DefaultParameters;
     eval(name);
     handles.ParamFileName = name;
 end

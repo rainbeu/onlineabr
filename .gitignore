@@ -7,4 +7,5 @@ Eq*.mat
 backup_param_file/**
 exp_toolbox/**
 playrec/**
+!EqFiltCoeff_fake_0000-00-00.mat
 
