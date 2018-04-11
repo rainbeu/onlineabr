@@ -1,6 +1,6 @@
 function stSystemSettings = system_settings(varargin)
 
-fs = 48000;
+fs = 96000;
 
 if nargin >= 1
     
@@ -8,43 +8,53 @@ if nargin >= 1
         
         case 'quickcalibrator'
             %% QuickCalibrator
-            stSystemSettings.fChirpAmp             = 0.03;
-            stSystemSettings.fCalibrationSinusAmp  = 0.03;
-            stSystemSettings.fCalibrationFrequency = 1000;
+            stSystemSettings.fChirpAmp             = 0.1; % was 0.1, eq -20 dB, 0.03 is -10 dB 
+            stSystemSettings.fCalibrationSinusAmp  = 0.1; % was 0.1, eq -20 dB 
+            stSystemSettings.fCalibrationFrequency = 5000;
             stSystemSettings.mfOutInChannelList    = [0 3; 1 4 ]; % starting with 0
             stSystemSettings.mfCrossChannelList    = [0 4; 1 3 ]; % starting with 0, for cross talk evaluation
-            stSystemSettings.vfExpFrequencyRange   = [400 22000];  % the important frequency region
+            stSystemSettings.vfExpFrequencyRange   = [100 45000];  % the important frequency region (from 2017-01-30)
+%             stSystemSettings.vfExpFrequencyRange   = [100 16500];  % the important frequency region (up to 2017-01-30)
+%             stSystemSettings.vfExpFrequencyRange   = [500 16500];  % old values changed on 2016-11-29
+            stSystemSettings.nOldEqualFilterOrder  = 300;             
             stSystemSettings.nEqualFilterOrder     = 128;             
             stSystemSettings.nSamplingFrequency    = fs;
-            stSystemSettings.fSweepStartFrequency  = 200;
+            stSystemSettings.fSweepStartFrequency  = 50;
             stSystemSettings.fSweepRate            = 1;             % octaves/second
             stSystemSettings.nRepeats              = 10;
-            stSystemSettings.sDeviceCode           = 'Hammerfall DSP';
+%             stSystemSettings.sDeviceCode           = 'Hammerfall DSP';
+%             stSystemSettings.sHostAPI              = 'ASIO';
+            stSystemSettings.sDeviceCode           = 'UCX';
+            stSystemSettings.sHostAPI              = 'ALSA';
             stSystemSettings.MicrophoneCal         = {
-                'low', 132.15
-                '-10', 132.15
-                '+4',  140.93
-                'mid', 140.93
-                'Hi',  146.93
-                'high',146.93
+                'low', 93.15
+                '-10', 93.15
+                '+4',  101.93
+                'mid', 101.93
+                'Hi',  107.93
+                'high',107.93
                 'El',    2
                 'el',    2
                 '0',     0
                 'zero',  0
                 'bk',  106
                 'buk', 106
-                'probe', 122
-                'gras',  143.938
+                'probe', 122.2
+                'gras',  143.9
+                'fg23329', 136
+                'ma3_40', 96.2 % old microphone calibration (Knowles FG-23329)
+                'em23046', 94.6 % new microphone calibration from Tytology (Knowles EM-23046)
+                'er-7c_ma3_40', 84.9 % Etymotic ER-7C  via +40 dB on TDT MA3 amplifier in RME Multiface @ -10dBV
                 };
             stSystemSettings.MicFilter(4097,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 0;
             stSystemSettings.MicFilter(1,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 1;
-            if exist('ER-7C B-1000.mat','file')
-                load 'ER-7C B-1000.mat' flt
-                stSystemSettings.MicFilter(:,4) = flt(:);
+            if exist('left_filter.mat','file')
+                load 'left_filter.mat' coeffs_left
+                stSystemSettings.MicFilter(:,4) = coeffs_left(:);
             end
-            if exist('ER-7C B-1048.mat','file')
-                load 'ER-7C B-1048.mat' flt
-                stSystemSettings.MicFilter(:,5) = flt(:);
+            if exist('right_filter.mat','file')
+                load 'right_filter.mat' coeffs_right
+                stSystemSettings.MicFilter(:,5) = coeffs_right(:);
             end
             
         case 'analyserawdata'

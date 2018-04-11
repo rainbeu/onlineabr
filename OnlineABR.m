@@ -27,11 +27,11 @@ function varargout = OnlineABR(varargin)
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @OnlineABR_OpeningFcn, ...
-                   'gui_OutputFcn',  @OnlineABR_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @OnlineABR_OpeningFcn, ...
+    'gui_OutputFcn',  @OnlineABR_OutputFcn, ...
+    'gui_LayoutFcn',  [] , ...
+    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
@@ -124,27 +124,41 @@ if ~isempty(FileName) && ~isnumeric(FileName)
     handles.ParamFileName = name;
 end
 set(hObject,'Value',0);
-items = arrayfun(@(x)sprintf('%1.1f',x/1e-6),handles.Setup.Stimulus.ITD,'UniformOutput',false);
-set(handles.popITD,'String',items,'Value',1);
-items = arrayfun(@(x)sprintf('%1.1f',x),handles.Setup.Stimulus.ILD,'UniformOutput',false);
-set(handles.popILD,'String',items,'Value',1);
+switch handles.Setup.Stimulus.PresentationType
+    case 'L/R/B'
+        set(handles.text4,'String','ITD');
+        set(handles.text5,'String','ILD');
+        items = arrayfun(@(x)sprintf('%1.1f',x/1e-6),handles.Setup.Stimulus.ITD,'UniformOutput',false);
+        set(handles.popITD,'String',items);
+        items = arrayfun(@(x)sprintf('%1.1f',x),handles.Setup.Stimulus.ILD,'UniformOutput',false);
+        set(handles.popILD,'String',items);
+    case 'simple binaural'
+        set(handles.text4,'String','Stim Lev');
+        set(handles.text5,'String','Masker Lev');
+        items = arrayfun(@(x)sprintf('%1.1f dB',x),handles.Setup.Stimulus.ITD,'UniformOutput',false);
+        set(handles.popITD,'String',items);
+        items = arrayfun(@(x)sprintf('%1.1f dB',x),handles.Setup.Stimulus.ILD,'UniformOutput',false);
+        set(handles.popILD,'String',items);
+end
+set(handles.popITD,'Value',1);
+set(handles.popILD,'Value',1);
 guidata(hObject,handles);
 DisplayInfo(handles)
 
 
 function DisplayInfo(handles)
 Msg = sprintf(['Artefact threshold: %1.1f µV\n\n'...
-              'Cal file: %s\n\n'...
-              'Duration: %1.3f ms\n'...
-              'Level: %1.1f dB SPL\n'...
-              'Type: %s\n\n'...
-              'Max Reps: %1.0f\n\n'],...
-              handles.Setup.Recording.ArtefactThr,...
-              handles.Setup.Hardware.CalFile,...
-              handles.Setup.Stimulus.Duration/1e-3,...
-              handles.Setup.Stimulus.Level,...
-              handles.Setup.Stimulus.Type,...
-              handles.Setup.Recording.MaxRepsPerCond);
+    'Cal file: %s\n\n'...
+    'Duration: %1.3f ms\n'...
+    'Level: %1.1f dB SPL\n'...
+    'Type: %s\n\n'...
+    'Max Reps: %1.0f\n\n'],...
+    handles.Setup.Recording.ArtefactThr,...
+    handles.Setup.Hardware.CalFile,...
+    handles.Setup.Stimulus.Duration/1e-3,...
+    handles.Setup.Stimulus.Level,...
+    handles.Setup.Stimulus.Type,...
+    handles.Setup.Recording.MaxRepsPerCond);
 switch handles.Setup.Stimulus.Type
     case 'tone'
         Msg = [Msg sprintf('Frequency: %1.1f Hz\n',handles.Setup.Stimulus.Frequency)];
@@ -157,6 +171,8 @@ set(handles.txtSetupInfo,'String',Msg);
 
 function [bRunning,ITDix,ILDix] = DisplayCallback(stSetup,Data,TimeOffset)
 handles = guidata(stSetup.hFigure);
+handles.Setup = stSetup;
+guidata(stSetup.hFigure,handles);
 bRunning = get(handles.tbnPlayRec,'Value');
 set(handles.txtOnlineInfo,'String',stSetup.Msg);
 plot(handles.axLeftEEG ,stSetup.t_ms,Data(:,1),'b-');
@@ -168,18 +184,36 @@ plot(handles.axRightSig,stSetup.t_ms,Data(:,[6 8]));
 set(handles.TimeAxes,'xlim',[min(stSetup.t_ms) max(stSetup.t_ms)]);
 set(handles.EEGAxes,'ylim',min(max([-1.1 1.1]*max(max(abs(Data(:,1:4)))),[-Inf 1]*2e-5),[-1 Inf]*2e-5));
 set(handles.SigAxes,'ylim',min(max([-1.1 1.1]*max(max(abs(Data(:,5:6)))),[-Inf 1]*2e-5),[-1 Inf]*2e-5));
-Spec = db(abs(fft(Data(:,5:6)/2e-5,stSetup.FFTSize)/(stSetup.FFTSize/2)));
+Spec = db(abs(fft(Data(:,5:6),stSetup.FFTSize)/size(Data,1)));
 semilogx(handles.axLeftFFT ,stSetup.f_Hz,Spec(:,1),'b-',...
-                            stSetup.f_Hz,Spec(:,2),'r-');
-set(handles.axLeftFFT,'xlim',[200 stSetup.Fs/2],'ylim',[0 100],'xscale','log','ytick',0:10:100);
+    stSetup.f_Hz,Spec(:,2),'r-');
+set(handles.axLeftFFT,'xlim',[200 stSetup.Fs/2],'ylim',[0 120],'xscale','log','ytick',0:10:100);
 semilogx(handles.axRightFFT,stSetup.f_Hz,Spec(:,1),'b-',...
-                            stSetup.f_Hz,Spec(:,2),'r-');
+    stSetup.f_Hz,Spec(:,2),'r-');
 mx = max(reshape(Spec(stSetup.f_Hz>400&stSetup.f_Hz<20000,:),[],1));
 mn = min(reshape(Spec(stSetup.f_Hz>400&stSetup.f_Hz<20000,:),[],1));
 if ~isnan(mx) && ~isinf(mx) && ~isnan(mn) && ~isinf(mn)
-    set(handles.axRightFFT,'xlim',[200 stSetup.Fs/2],'ylim',[mn-15 mx+15],'xscale','log','ytick',0:3:100);
+    set(handles.axRightFFT,'xlim',[200 stSetup.Fs/2],'ylim',[mn-15 mx+15],'xscale','log','ytick',-100:10:100);
+else
+    set(handles.axRightFFT,'xlim',[200 stSetup.Fs/2],'ylim',[0 120],'xscale','log','ytick',-100:10:100);
 end
 drawnow;
+switch handles.Setup.Stimulus.PresentationType
+    case 'L/R/B'
+        set(handles.text4,'String','ITD');
+        set(handles.text5,'String','ILD');
+        items = arrayfun(@(x)sprintf('%1.1f',x/1e-6),handles.Setup.Stimulus.ITD,'UniformOutput',false);
+        set(handles.popITD,'String',items);
+        items = arrayfun(@(x)sprintf('%1.1f',x),handles.Setup.Stimulus.ILD,'UniformOutput',false);
+        set(handles.popILD,'String',items);
+    case 'simple binaural'
+        set(handles.text4,'String','Stim Lev');
+        set(handles.text5,'String','Masker Lev');
+        items = arrayfun(@(x)sprintf('%1.1f dB',x),handles.Setup.Stimulus.ITD,'UniformOutput',false);
+        set(handles.popITD,'String',items);
+        items = arrayfun(@(x)sprintf('%1.1f dB',x),handles.Setup.Stimulus.ILD,'UniformOutput',false);
+        set(handles.popILD,'String',items);
+end
 ITDix = get(handles.popITD,'Value');
 ILDix = get(handles.popILD,'Value');
 
@@ -216,7 +250,7 @@ fs = stS.Fs;
 Hw = stS.Hardware;
 St = stS.Stimulus;
 Rc = stS.Recording;
-InputScalingFactor_uV = 10^(2/20)/1e4*2*sqrt(2)/1e-6;
+InputScalingFactor_uV = 10^(2/20)/1e3*2*sqrt(2)/1e-6;
 
 %% sound device initialization
 if playrec('isInitialised')

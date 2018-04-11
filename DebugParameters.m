@@ -4,14 +4,15 @@ handles.Setup.DisplayTime         = 1;  % display is updated every ... seconds
 % handles.Setup.Hardware.DryRun     = true;
 handles.Setup.Hardware.DryRun     = false;
 
-handles.Setup.Hardware.PlayDev    = 10; % ASIO was 42 until 2015/07/21, new RME driver
-handles.Setup.Hardware.RecDev     = 10; % ASIO was 42 until 2015/07/21, new RME driver
+handles.Setup.Hardware.PlayDev    = 0; % ASIO
+handles.Setup.Hardware.RecDev     = 0; % ASIO
 handles.Setup.Hardware.PlayCh     = 6;
 handles.Setup.Hardware.RecCh      = 6;
 handles.Setup.Hardware.BufferSize = 0;
 
-% handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_OG1_terminal_right_2016-11-20.mat';
-handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_OG7_right_CAP_2017-01-31.mat';
+handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_owl_better_2014-05-28.mat';
+handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_fake_0000-00-00.mat';
+handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_ABR_mouse_2014-09-17.mat';
 
 handles.Setup.Hardware.LevelCorrection = [-0 0];
 handles.Setup.Hardware.StimCh     = [1 2];
@@ -44,8 +45,8 @@ handles.Setup.Stimulus.UseSignSwapping = false;
 % handles.Setup.Stimulus.PresentationType      = 'L/R/B';
 handles.Setup.Stimulus.PresentationType      = 'simple binaural';
 
-handles.Setup.Stimulus.StimulusSide = 'R'; %'L', 'L+R'
-handles.Setup.Stimulus.MaskerSide = 'R'; %'L', 'L+R'
+handles.Setup.Stimulus.StimulusSide = 'L'; % 'R', 'L+R'
+handles.Setup.Stimulus.MaskerSide = 'L'; % 'R', 'L+R'
 
 handles.Setup.Stimulus.BufferLen             = 2^16;  % samples
 handles.Setup.Stimulus.IAC                   = 1;      % interaural correlation of masker
@@ -69,34 +70,22 @@ handles.Setup.Recording.ExtraSmp    = 3000;
 handles.Setup.Recording.PreTime     = 0.101;
 handles.Setup.Recording.RecTime     = 0.150;
 
-handles.Setup.Recording.ArtefactThr = 25000; % µV
-handles.Setup.Recording.RejectArtefacts = true;
+handles.Setup.Recording.ArtefactThr = 5e-3; % µV
+handles.Setup.Recording.RejectArtefacts = false;
 
 handles.Setup.Recording.MaxRepsPerCond = 5000;
 
-%% peak voltages
-% handles.Setup.Hardware.SoundCardVoltToSample = 1/1.780; % low / -10 dBV
+handles.Setup.Hardware.SoundCardVoltToSample = 1/1.780; % low / -10 dBV
 % handles.Setup.Hardware.SoundCardVoltToSample = 1/4.893; % mid / +4 dBu
 % handles.Setup.Hardware.SoundCardVoltToSample = 1/9.763; % high / Hi Gain
-%% RMS voltages
-handles.Setup.Hardware.SoundCardVoltToSample = 1/1.259; % low / -10 dBV
-% handles.Setup.Hardware.SoundCardVoltToSample = 1/3.460; % mid / +4 dBu
-% handles.Setup.Hardware.SoundCardVoltToSample = 1/6.904; % high / Hi Gain
-%% 
-handles.Setup.Hardware.MicAmp_GainFactor = 10^(40/20); % linear
-
 handles.Setup.Hardware.SoundCard_In_Impedance = 10000; % Ohm
+handles.Setup.Hardware.PhysAmp_Out_Impedance = 600; % Ohm
 handles.Setup.Hardware.MicAmp_Out_Impedance = 5; % Ohm
 handles.Setup.Hardware.MicAmp_In_Impedance = 600; % Ohm
-% handles.Setup.Hardware.Mic_Out_Impedance = 4400; % Ohm % Knowles microphones
-handles.Setup.Hardware.Mic_Out_Impedance = 235; % Ohm % Etymotic ER-7C probe microphone
-% handles.Setup.Hardware.Mic_PascalToVolt = 10^(-53.5/20)*1.0/0.1; % Knowles FG-23329
-handles.Setup.Hardware.Mic_PascalToVolt = 0.050; % Etymotic ER-7C probe microphone
+handles.Setup.Hardware.MicAmp_GainFactor = 10^(40/20); % linear
+handles.Setup.Hardware.PhysAmp_GainFactor = 10000; % linear
+handles.Setup.Hardware.Mic_Out_Impedance = 4400; % Ohm
+handles.Setup.Hardware.Mic_PascalToVolt = 10^(-53.5/20)*1.0/0.1; % Knowles FG-23329
+% handles.Setup.Hardware.Mic_Cal_Value = [];
+handles.Setup.Hardware.Mic_Cal_Value = 96; % add to dB FS to get dB SPL
 
-%% in not empty ([]) only this value will be used, regardless of the more detailed values above
-handles.Setup.Hardware.Mic_Cal_Value = [];
-% handles.Setup.Hardware.Mic_Cal_Value = 96.179; % add to dB FS to get dB SPL
-
-%% 
-handles.Setup.Hardware.PhysAmp_Out_Impedance = 600; % Ohm
-handles.Setup.Hardware.PhysAmp_GainFactor = 1000; % linear
