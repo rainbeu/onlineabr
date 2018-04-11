@@ -1,7 +1,11 @@
 function devID = get_playrec_device_id(varargin)
     
     name = 'Hammerfall';
-    host_api = 'ASIO';
+    if ispc
+        host_api = 'ASIO';
+    else
+        host_api = 'ALSA';
+    end
     
     dev = playrec('getDevices');
     

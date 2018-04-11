@@ -44,12 +44,12 @@ if nargin >= 1
                 };
             stSystemSettings.MicFilter(4097,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 0;
             stSystemSettings.MicFilter(1,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 1;
-            if exist('ER-7C B-1130.mat','file') 
-                load 'ER-7C B-1130.mat' flt
+            if exist('ER-7C B-1128.mat','file') 
+                load 'ER-7C B-1128.mat' flt
                 stSystemSettings.MicFilter(1:length(flt),4) = flt(:);
             end
-            if exist('ER-7C B-1128.mat','file')
-                load 'ER-7C B-1128.mat' flt
+            if exist('ER-7C B-1130.mat','file')
+                load 'ER-7C B-1130.mat' flt
                 stSystemSettings.MicFilter(1:length(flt),5) = flt(:);
             end
             

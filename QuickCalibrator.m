@@ -125,7 +125,8 @@ for nChannelIdx = 1:size(mfOutInChannelList,1)
     vfFullImpulseResponse(:,nChannelIdx) = ifft(fft(vfRecordedSignal)./fft(vfChirpSignal));
     if strcmpi(sSwitchSetting,'probe') || strcmpi(sSwitchSetting,'knowles')
         Tmp = fftfilt(stS.MicFilter(:,mfOutInChannelList(nChannelIdx,2)+1),[vfFullImpulseResponse(:,nChannelIdx);zeros(size(stS.MicFilter,1),1)]);
-        vfFullImpulseResponse(:,nChannelIdx) = Tmp(ceil(size(stS.MicFilter,1)/2)+(0:length(vfFullImpulseResponse)-1));
+        filter_latency = round(median(grpdelay(stS.MicFilter(:,mfOutInChannelList(nChannelIdx,2)+1))));
+        vfFullImpulseResponse(:,nChannelIdx) = Tmp(filter_latency+(0:length(vfFullImpulseResponse)-1));
     end
     [dummy,nLatency] = max(abs(hilbert(vfFullImpulseResponse(1:nSamplingFrequency,nChannelIdx))));
     

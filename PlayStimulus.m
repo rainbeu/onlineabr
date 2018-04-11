@@ -245,7 +245,6 @@ end
 %% stimulus ITD/ILD preparation
 switch St.PresentationType
     case 'L/R/B'
-        %% TODO!!! window onoffset
         switch St.Window
             case { 'onoffset' }
                 W = hann(R);
@@ -288,7 +287,6 @@ end
 %% level calibration for transposed tones
 switch St.Type
     case { 'transposedtone' }
-        %% TODO!! shiftstim
         % R = double ramp duration in samples
         RMS = db(std(stimulus(1+R/2:N-R/2,:),1));
         stimulus = bsxfun(@times,stimulus,10.^((-MaxSPL(:)+St.Level(:)-RMS(:)+Hw.LevelCorrection(:))/20).');
@@ -329,7 +327,7 @@ trigger(round(TimeOffset*fs)+(1:round(0.001*fs))) = 0.1824;  % works with all sw
 %% preparation
 
 counter = 0;
-stS.RecSize = length(stimulus)+Rc.ExtraSmp;
+stS.RecSize = round(Rc.PreTime*fs)+max(round(Rc.RecTime*fs),length(stimulus))+Rc.ExtraSmp;
 IdxVec = (-round(Rc.PreTime*fs):round(Rc.RecTime*fs)-1).';
 stS.t_ms = (IdxVec/fs)/1e-3;
 stS.FFTSize = 2^nextpow2(round(Rc.RecTime*fs));
@@ -360,6 +358,7 @@ else
 end
 recording = zeros(stS.RecSize,Hw.RecCh);
 signal = 0*stimulus;
+pre_padding = zeros(round(Rc.PreTime*fs)-floor(TimeOffset*fs),3);
 
 lastitdidx = -1; itdidx = -1; lastsign = 1; sign = 1; lastildidx = -1; ildidx = -1;
 stimstart = [];
@@ -521,6 +520,8 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
     end
     
     lastsignal = [[sum(signal,2), zeros(size(signal,1),1), trigger, 10^(-22/20)*signal, zeros(size(signal,1),1)];zeros(Rc.ExtraSmp,Hw.RecCh)];
+    lastsignal = [zeros(size(pre_padding,1),size(lastsignal,2));lastsignal];
+    lastsignal(end+1:stS.RecSize, :) = 0;
     
     switch St.PresentationType
         case 'L/R/B'
@@ -564,7 +565,7 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
     end
     
     if ~Hw.DryRun 
-        page  = playrec('playrec',[signal,trigger],[Hw.StimCh Hw.TrgCh],stS.RecSize,1:Hw.RecCh);
+        page  = playrec('playrec',[pre_padding;[signal,trigger]],[Hw.StimCh Hw.TrgCh],stS.RecSize,1:Hw.RecCh);
     else
     end
     
