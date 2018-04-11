@@ -251,7 +251,7 @@ end
 
 %% trigger
 trigger = zeros(size(stimulus,1),1);
-trigger(round(TimeOffset*fs)+(1:round(0.001*fs))) = 1;
+trigger(round(TimeOffset*fs)+(1:round(0.001*fs))) = 0.1824;  % works with all switch positions on RME Multiface
 
 %% preparation
 
@@ -281,12 +281,13 @@ lastpage   = -1;
 page       =  1;
 if ~Hw.DryRun 
     page      = playrec('playrec',[stimulus*0,trigger],[Hw.StimCh Hw.TrgCh],stS.RecSize,1:Hw.RecCh);
+    startpage = page;
 else
 end
 recording = zeros(stS.RecSize,Hw.RecCh);
 signal = 0*stimulus;
 
-lastitdidx = -1; itdidx = -1; lastsign = 1; sign = 1; lastildidx = 0; ildidx = 0;
+lastitdidx = -1; itdidx = -1; lastsign = 1; sign = 1; lastildidx = -1; ildidx = -1;
 stimstart = [];
 ITDix = 1;
 ILDix = 1;
@@ -345,7 +346,7 @@ fwrite(fid,InputScalingFactor_uV,'double');
 while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
     
     % get recording
-    if lastpage >= 0 && all([lastitdidx lastildidx] > 0)
+    if lastpage ~= startpage && lastpage >= 0 && all([lastitdidx lastildidx] > 0)
         
         if ~Hw.DryRun 
             playrec('block',lastpage);
@@ -371,7 +372,8 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
         EEG = EEG - mean(EEG);
         mx = max(mx,max(abs(EEG)));
         
-        stimstart = find(filtfilt(0.3,[1 -0.7],recording(:,Rc.TrgCh)) > 0.5,1,'first');
+        % threshold 0.1 works with all switch positions on RME Multiface
+        stimstart = find(filtfilt(0.3,[1 -0.7],recording(:,Rc.TrgCh)) > 0.1,1,'first');
         
         if ~isempty(stimstart) && stimstart+min(IdxVec) >= 1 && stimstart+max(IdxVec) <= length(EEG)
             
@@ -416,7 +418,7 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
     switch St.PresentationType
         case 'L/R/B'
             lastildidx = ildidx;
-            ildidx     = randi(length(St.ILD),1);
+            ildidx     = floor(rand*length(St.ILD))+1; %randi(length(St.ILD),1);
             if ~St.LevelThreshold
                 % positive ILD => softer left (1), louder right (2)
                 LeftILDFactor  = 10^(-St.ILD(ildidx)/2/20);
@@ -426,14 +428,14 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
                 RightILDFactor = 10^(+St.ILD(ildidx)/20);
             end
             lastitdidx = itdidx;
-            itdidx    = randi(length(St.ITD)+2,1);
+            itdidx    = floor(rand*(length(St.ITD)+2))+1; %randi(length(St.ITD)+2,1);
         case 'simple binaural'
             lastildidx = ildidx;
-            ildidx     = randi(length(St.ILD),1);
+            ildidx     = floor(rand*length(St.ILD))+1; %randi(length(St.ILD),1);
             LeftMaskerFactor  = 10^(+St.ILD(ildidx)/20);
             RightMaskerFactor = 10^(+St.ILD(ildidx)/20);
             lastitdidx = itdidx;
-            itdidx    = randi(length(St.ITD),1);
+            itdidx    = floor(rand*length(St.ITD))+1; %randi(length(St.ITD),1);
             LeftStimFactor  = 10^(+St.ITD(itdidx)/20);
             RightStimFactor = 10^(+St.ITD(itdidx)/20);
     end
@@ -465,7 +467,7 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
             if St.MaskerFrozen
                 offset = 0;
             else
-                offset = randi(St.BufferLen-MaskerSamples,1);
+                offset = floor(rand*(St.BufferLen-MaskerSamples))+1; %randi(St.BufferLen-MaskerSamples,1);
             end
             signal(1:MaskerSamples,1) = signal(1:MaskerSamples,1) + LeftMaskerFactor  * mWin .* masker(offset+(1:MaskerSamples),1);
             signal(1:MaskerSamples,2) = signal(1:MaskerSamples,2) + RightMaskerFactor * mWin .* masker(offset+(1:MaskerSamples),2);
