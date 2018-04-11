@@ -30,7 +30,7 @@ handles.Setup.Stimulus.FileCh         = 1;
 handles.Setup.Stimulus.bDoResample    = false;
 handles.Setup.Stimulus.RampDur        = 0.001;
 handles.Setup.Stimulus.Window         = 'none'; % 'hann'; 
-handles.Setup.Stimulus.Level          = 70; % dB SPL after calibration
+handles.Setup.Stimulus.Level          = 60; % dB SPL after calibration
 
 handles.Setup.Stimulus.ITD            = [0] * 1e-6;  % sec.
 handles.Setup.Stimulus.ILD            = [0]; % dB
@@ -62,8 +62,8 @@ handles.Setup.Stimulus.MaskerRampDur         = 0;        % seconds
 handles.Setup.Stimulus.MaskerFrozen          = true;        %
 
 
-handles.Setup.Recording.FileName    = 'data/datafile';
-handles.Setup.Recording.EEGCh       = 1;
+handles.Setup.Recording.FileName    = ['data/st/STG1801_datafile_',handles.Setup.Stimulus.Type,'_',num2str(handles.Setup.Stimulus.Level),'dB'];
+handles.Setup.Recording.EEGCh       = 2;
 handles.Setup.Recording.MicCh       = [4 5];
 handles.Setup.Recording.TrgCh       = 3;
 
@@ -76,24 +76,44 @@ handles.Setup.Recording.RejectArtefacts = true;
 
 handles.Setup.Recording.MaxRepsPerCond = 500;
 
-handles.Setup.Hardware.SoundCardVoltToSample = 1/1.780; % low / -10 dBV Peak
-% handles.Setup.Hardware.SoundCardVoltToSample = 1/4.893; % mid / +4 dBu Peak
-% handles.Setup.Hardware.SoundCardVoltToSample = 1/9.763; % high / Hi Gain Peak
-% handles.Setup.Hardware.SoundCardVoltToSample = 1/1.259; % low / -10 dBV RMS
-% handles.Setup.Hardware.SoundCardVoltToSample = 1/3.460; % mid / +4 dBu RMS
-% handles.Setup.Hardware.SoundCardVoltToSample = 1/6.904; % high / Hi Gain RMS
+%% sound card
+%% peak voltages
+% handles.Setup.Hardware.SoundCardVoltToSample = 1/1.780; % low / -10 dBV
+% handles.Setup.Hardware.SoundCardVoltToSample = 1/4.893; % mid / +4 dBu
+% handles.Setup.Hardware.SoundCardVoltToSample = 1/9.763; % high / Hi Gain
+%% RMS voltages
+handles.Setup.Hardware.SoundCardVoltToSample = 1/1.259; % low / -10 dBV
+% handles.Setup.Hardware.SoundCardVoltToSample = 1/3.460; % mid / +4 dBu
+% handles.Setup.Hardware.SoundCardVoltToSample = 1/6.904; % high / Hi Gain
+%% 
 handles.Setup.Hardware.SoundCard_In_Impedance = 10000; % Ohm
 
+%% microphone amplifier (if applicable)
+% no mic amp
 handles.Setup.Hardware.MicAmp_Out_Impedance = 0; % Ohm
 handles.Setup.Hardware.MicAmp_In_Impedance = 1e9; % Ohm
 handles.Setup.Hardware.MicAmp_GainFactor = 10^(0/20); % linear
 
-handles.Setup.Hardware.Mic_Out_Impedance = 4400; % Ohm
+% TDT MA3 @ 40 dB amplification
+% handles.Setup.Hardware.MicAmp_Out_Impedance = 5; % Ohm
+% handles.Setup.Hardware.MicAmp_In_Impedance = 600; % Ohm
+% handles.Setup.Hardware.MicAmp_GainFactor = 10^(40/20); % linear
+
+%% microphone
+% Knowles FG-23329
+% handles.Setup.Hardware.Mic_Out_Impedance = 4400; % Ohm
 % handles.Setup.Hardware.Mic_PascalToVolt = 10^(-53.5/20)*1.0/0.1; % Knowles FG-23329 RMS!
-handles.Setup.Hardware.Mic_PascalToVolt = 10^(-50.5/20)*1.0/0.1; % Knowles FG-23329 Peak!
+% handles.Setup.Hardware.Mic_PascalToVolt = 10^(-50.5/20)*1.0/0.1; % Knowles FG-23329 Peak!
+
+% Etymotic ER-7C probe microphone
+handles.Setup.Hardware.Mic_Out_Impedance = 235; % Ohm % Etymotic ER-7C probe microphone
+handles.Setup.Hardware.Mic_PascalToVolt = 0.050; % Etymotic ER-7C probe microphone
+
+% if not empty: skip detailed calculation of microphone transfer
 handles.Setup.Hardware.Mic_Cal_Value = [];
 % handles.Setup.Hardware.Mic_Cal_Value = 96.179; % add to dB FS to get dB SPL
 
+%% physiological signal amplifier
 handles.Setup.Hardware.PhysAmp_Out_Impedance = 600; % Ohm
 handles.Setup.Hardware.PhysAmp_GainFactor = 10000; % linear
 

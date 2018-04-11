@@ -4,11 +4,11 @@ handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_fake_0000-00-00.mat';
 handles.Setup.Fs                  = 48000;
 handles.Setup.DisplayTime         = 1;  % display is updated every ... seconds 
 
-% handles.Setup.Hardware.DryRun     = true;
-handles.Setup.Hardware.DryRun     = false;
+handles.Setup.Hardware.DryRun     = false; % for use with real sound hardware
+% handles.Setup.Hardware.DryRun     = true; % for use without actual sound hardware
 
-handles.Setup.Hardware.PlayDev    = 10; % ASIO was 42 until 2015/07/21, new RME driver
-handles.Setup.Hardware.RecDev     = 10; % ASIO was 42 until 2015/07/21, new RME driver
+handles.Setup.Hardware.PlayDev    = 0; % call get_playrec_device_id to obtain these numbers
+handles.Setup.Hardware.RecDev     = 0; % ...
 handles.Setup.Hardware.PlayCh     = 6;
 handles.Setup.Hardware.RecCh      = 6;
 handles.Setup.Hardware.BufferSize = 0;
@@ -17,9 +17,9 @@ handles.Setup.Hardware.LevelCorrection = [0 0];
 handles.Setup.Hardware.StimCh     = [1 2];
 handles.Setup.Hardware.TrgCh      = 3;
 
-handles.Setup.Stimulus.Duration       = 0.020;
+handles.Setup.Stimulus.Duration       = 0.010;
 handles.Setup.Stimulus.Type           = 'click';  % 'tone'; % 'wave'; % 'CAP'; 
-handles.Setup.Stimulus.Frequency      = 8000;
+handles.Setup.Stimulus.Frequency      = 1000;
 handles.Setup.Stimulus.ModulationDepth = 0;
 handles.Setup.Stimulus.Fs             = handles.Setup.Fs;
 handles.Setup.Stimulus.FileName       = 'chirp20kHz_48kHz.wav'; 
@@ -27,7 +27,7 @@ handles.Setup.Stimulus.FileTimeOffset = 203/48000;
 handles.Setup.Stimulus.SampleFormat   = 'int16';
 handles.Setup.Stimulus.FileCh         = 1;
 handles.Setup.Stimulus.bDoResample    = false;
-handles.Setup.Stimulus.RampDur        = 0.005;
+handles.Setup.Stimulus.RampDur        = 0.001;
 handles.Setup.Stimulus.Window         = 'none'; % 'hann';
 handles.Setup.Stimulus.Level          = 60; % dB SPL after calibration
 
