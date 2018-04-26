@@ -257,7 +257,7 @@ fs = stS.Fs;
 Hw = stS.Hardware;
 St = stS.Stimulus;
 Rc = stS.Recording;
-InputScalingFactor_uV = 10^(2/20)/1e3*2*sqrt(2)/1e-6;
+InputScalingFactor_uV = get_input_scaling_factor_uV(Hw);
 
 %% sound device initialization
 if playrec('isInitialised')

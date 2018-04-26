@@ -80,13 +80,13 @@ handles.Setup.Recording.MaxRepsPerCond = 500;
 
 %% sound card
 %% peak voltages
-% handles.Setup.Hardware.SoundCardVoltToSample = 1/1.780; % low / -10 dBV
-% handles.Setup.Hardware.SoundCardVoltToSample = 1/4.893; % mid / +4 dBu
-% handles.Setup.Hardware.SoundCardVoltToSample = 1/9.763; % high / Hi Gain
+handles.Setup.Hardware.SoundCardVoltToSamplePeak = 1/1.780; % low / -10 dBV
+% handles.Setup.Hardware.SoundCardVoltToSamplePeak = 1/4.893; % mid / +4 dBu
+% handles.Setup.Hardware.SoundCardVoltToSamplePeak = 1/9.763; % high / Hi Gain
 %% RMS voltages
-handles.Setup.Hardware.SoundCardVoltToSample = 1/1.259; % low / -10 dBV
-% handles.Setup.Hardware.SoundCardVoltToSample = 1/3.460; % mid / +4 dBu
-% handles.Setup.Hardware.SoundCardVoltToSample = 1/6.904; % high / Hi Gain
+handles.Setup.Hardware.SoundCardVoltToSampleRMS = 1/1.259; % low / -10 dBV
+% handles.Setup.Hardware.SoundCardVoltToSampleRMS = 1/3.460; % mid / +4 dBu
+% handles.Setup.Hardware.SoundCardVoltToSampleRMS = 1/6.904; % high / Hi Gain
 %% 
 handles.Setup.Hardware.SoundCard_In_Impedance = 10000; % Ohm
 
@@ -104,12 +104,12 @@ handles.Setup.Hardware.MicAmp_GainFactor = 10^(0/20); % linear
 %% microphone
 % Knowles FG-23329
 % handles.Setup.Hardware.Mic_Out_Impedance = 4400; % Ohm
-% handles.Setup.Hardware.Mic_PascalToVolt = 10^(-53.5/20)*1.0/0.1; % Knowles FG-23329 RMS!
-% handles.Setup.Hardware.Mic_PascalToVolt = 10^(-50.5/20)*1.0/0.1; % Knowles FG-23329 Peak!
+% handles.Setup.Hardware.Mic_PascalToVoltRMS = 10^(-53.5/20)*1.0/0.1; % Knowles FG-23329 RMS!
+% handles.Setup.Hardware.Mic_PascalToVoltPeak = 10^(-50.5/20)*1.0/0.1; % Knowles FG-23329 Peak!
 
 % Etymotic ER-7C probe microphone
 handles.Setup.Hardware.Mic_Out_Impedance = 235; % Ohm % Etymotic ER-7C probe microphone
-handles.Setup.Hardware.Mic_PascalToVolt = 0.050; % Etymotic ER-7C probe microphone
+handles.Setup.Hardware.Mic_PascalToVoltRMS = 0.050; % Etymotic ER-7C probe microphone
 
 % if not empty: skip detailed calculation of microphone transfer
 handles.Setup.Hardware.Mic_Cal_Value = [];

@@ -10,22 +10,8 @@ stS.Msg = 'Start';
 bRunning = true;
 fid = -1;
 
-% InputScalingFactor_uV = 10^(2/20)/1e4*2*sqrt(2)/1e-6;
-InputScalingFactor_uV = 1/(Hw.PhysAmp_GainFactor ...
-                          * Hw.SoundCard_In_Impedance/(Hw.SoundCard_In_Impedance+Hw.PhysAmp_Out_Impedance) ...
-                          * Hw.SoundCardVoltToSample) ...
-                          /1e-6;
-
-% MicScaling_Pa = 2e-5/1e-6*10^(2/20);
-if isempty(Hw.Mic_Cal_Value)
-    MicScaling_Pa = 1/(2e-5 * Hw.Mic_PascalToVolt ...
-                         * Hw.MicAmp_In_Impedance/(Hw.MicAmp_In_Impedance+Hw.Mic_Out_Impedance) ...
-                         * Hw.MicAmp_GainFactor ...
-                         * Hw.SoundCard_In_Impedance/(Hw.SoundCard_In_Impedance+Hw.MicAmp_Out_Impedance) ...
-                         * Hw.SoundCardVoltToSample);
-else
-    MicScaling_Pa = 10^(Hw.Mic_Cal_Value/20);
-end
+InputScalingFactor_uV = get_input_scaling_factor_uV(Hw);
+MicScaling_Pa = get_mic_scaling_Pa(Hw);
 
 [fb,fa] = butter(4,[300 3000]/fs*2);
 
