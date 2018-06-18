@@ -274,6 +274,11 @@ drawnow;
 page    = playrec('rec',round(5*fs),1:Hw.RecCh);
 playrec('block',page);
 rec = double(playrec('getRec',page)) * InputScalingFactor_uV;
+subplot(1,10,10);
+[H,bins] = hist(rec(:,Rc.EEGCh),250);
+plot(H,bins);
+line([0;max(H)],[1;1]*quantile(H,[0 0.01 0.05 0.25 0.5 0.75 0.95 0.99 1]));
+subplot(1,10,[1:9]);
 plot((0:round(0.1*fs)-1)/fs,reshape(rec(:,Rc.EEGCh),round(0.1*fs),[]));
 p = ginput(1);
 
