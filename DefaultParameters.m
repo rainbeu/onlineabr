@@ -1,4 +1,4 @@
-handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_Carfax_2018-04-26.mat';
+handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_Carfax02_2018-04-26.mat';
 
 %%
 handles.Setup.Fs                  = 48000;
