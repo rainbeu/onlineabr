@@ -1,4 +1,4 @@
-handles.Setup.Stimulus.ITD = [-600 -300 -100 -80 -40 0 40 80 100 300 600] * 1e-6;  % (micro-)seconds
+handles.Setup.Stimulus.ITD = [-600 -300-120 -100 -80 -40 0 40 80 100 120 300 600] * 1e-6;  % (micro-)seconds
 
 handles.Setup.Stimulus.Level = 60; % dB SPL after calibration
 
