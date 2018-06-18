@@ -256,7 +256,7 @@ trigger(round(TimeOffset*fs)+(1:round(0.001*fs))) = 0.1824;  % works with all sw
 %% preparation
 
 counter = 0;
-stS.RecSize = length(stimulus)+Rc.ExtraSmp;
+stS.RecSize = Rc.PreZeros+length(stimulus)+Rc.ExtraSmp;
 IdxVec = (-round(Rc.PreTime*fs):round(Rc.RecTime*fs)-1).';
 stS.t_ms = (IdxVec/fs)/1e-3;
 stS.FFTSize = 2^nextpow2(round(Rc.RecTime*fs));
@@ -280,7 +280,9 @@ MicC = zeros(length(St.ITD)+2,length(St.ILD));
 lastpage   = -1;
 page       =  1;
 if ~Hw.DryRun 
-    page      = playrec('playrec',[stimulus*0,trigger],[Hw.StimCh Hw.TrgCh],stS.RecSize,1:Hw.RecCh);
+    output_buffer = [stimulus*0,trigger];
+    output_buffer = [zeros(Rc.PreZeros, size(output_buffer, 2)); output_buffer];
+    page  = playrec('playrec',output_buffer,[Hw.StimCh Hw.TrgCh],stS.RecSize,1:Hw.RecCh);
     startpage = page;
 else
 end
@@ -490,7 +492,9 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
     end
     
     if ~Hw.DryRun 
-        page  = playrec('playrec',[signal,trigger],[Hw.StimCh Hw.TrgCh],stS.RecSize,1:Hw.RecCh);
+        output_buffer = [signal,trigger];
+        output_buffer = [zeros(Rc.PreZeros, size(output_buffer, 2)); output_buffer];
+        page  = playrec('playrec',output_buffer,[Hw.StimCh Hw.TrgCh],stS.RecSize,1:Hw.RecCh);
     else
     end
     
