@@ -1,4 +1,4 @@
-handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_Carfax02_2018-04-26.mat';
+handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_fake_0000-00-00.mat';
 
 %%
 handles.Setup.Fs                  = 48000;
@@ -51,8 +51,8 @@ handles.Setup.Stimulus.MaskerSide   =  'L'; % 'R';  % 'L+R';
 
 handles.Setup.Stimulus.BufferLen             = 1;  % samples
 handles.Setup.Stimulus.IAC                   = 1;      % interaural correlation of masker
-handles.Setup.Stimulus.CenterFreq            = 0;  % Hz
-handles.Setup.Stimulus.BandWidth             = 0;  % Hz
+handles.Setup.Stimulus.CenterFreq            = 1250;  % Hz
+handles.Setup.Stimulus.BandWidth             = 200;  % Hz
 handles.Setup.Stimulus.MaskerLevel           = -inf;     % dB SPL
 handles.Setup.Stimulus.MaskerDuration        = 0; % seconds
 handles.Setup.Stimulus.StimOnsetDelay        = 0; % seconds

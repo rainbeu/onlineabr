@@ -81,6 +81,8 @@ switch St.Type
         TimeOffset = 0;
     case 'narrowband noise'
         stimulus = randn(N,1);
+        f = (0:N-1).'/N*fs; f(f>=fs/2) = f(f>=fs/2) - fs;
+        stimulus = real(ifft(fft(stimulus).*(abs(f)>(St.CenterFreq-St.Bandwidth/2)&abs(f)<=(St.CenterFreq+St.Bandwidth/2))));
         RMS = db(std(stimulus(1:N,:),1));
         TimeOffset = 0;
     case 'modulated noise'
