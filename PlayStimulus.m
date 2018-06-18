@@ -285,8 +285,6 @@ switch St.Type
         TimeOffset = TimeOffset + max(mean(GroupDelay),0);
     otherwise
 end
-
-
 %% switch off unused channels
 switch St.PresentationType
     case 'simple binaural'

@@ -68,6 +68,7 @@ handles.Setup.Recording.MicCh       = [4 5];
 handles.Setup.Recording.TrgCh       = 3;
 
 handles.Setup.Recording.ExtraSmp    = 4800;
+handles.Setup.Recording.PreZeros    = 480;
 handles.Setup.Recording.PreTime     = 0.004;
 handles.Setup.Recording.RecTime     = 0.015;
 
