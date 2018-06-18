@@ -1,21 +1,21 @@
-handles.Setup.Stimulus.ITD = [-1000 -500 -250 0 250 500 1000] * 1e-6;  % (micro-)seconds
+handles.Setup.Stimulus.ITD = [-500 -300 -100 0 100 300 500] * 1e-6;  % (micro-)seconds
 
 handles.Setup.Stimulus.Level = 80; % dB SPL after calibration
 
-handles.Setup.Recording.MaxRepsPerCond = 500;
+handles.Setup.Recording.MaxRepsPerCond = 20;
 
-handles.Setup.Recording.ArtefactThr = 20;  % µV
+handles.Setup.Recording.ArtefactThr = 10;  % µV
 handles.Setup.Recording.RejectArtefacts = true;
 
 %%
 
 handles.Setup.Stimulus.ILD = [0]; % dB, if LevelThreshold = true (cf. below), use as level steps
 handles.Setup.Stimulus.Type = 'transposedtone';
-handles.Setup.Stimulus.Frequency      = 700;
-handles.Setup.Stimulus.CarrierFrequency = 4000; % for transposedtone
+handles.Setup.Stimulus.Frequency      = 1000;
+handles.Setup.Stimulus.CarrierFrequency = 6000; % for transposedtone
 handles.Setup.Stimulus.LowPassFrequency = 2000; % for transposedtone
 handles.Setup.Stimulus.Duration = 0.125;  % seconds
-handles.Setup.Stimulus.Window = 'ongoing';
+handles.Setup.Stimulus.Window = 'onoffset';
 handles.Setup.Stimulus.RampDur = 0.025;  % seconds
 
 
@@ -29,4 +29,6 @@ handles.Setup.Recording.PreTime = 0.050;  % seconds
 handles.Setup.Recording.RecTime = 0.250;  % seconds
 
 handles.Setup.Stimulus.UseSignSwapping = true;
+
+%handles.Setup.Recording.FileName    = ['data/Baseo____',handles.Setup.Stimulus.Type,'_',num2str(handles.Setup.Stimulus.CarrierFrequeny/1e3),'k',num2str(handles.Setup.Stimulus.Frequency)];
 
