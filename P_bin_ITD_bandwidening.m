@@ -16,7 +16,7 @@ handles.Setup.Stimulus.Bandwidth = 200; % for transposedtone
 handles.Setup.Stimulus.Duration = 0.125;  % seconds
 handles.Setup.Stimulus.Window = 'hann';
 handles.Setup.Stimulus.RampDur = 0.025;  % seconds
-
+handles.Setup.Stimulus.Frozen = false;
 
 %%
 

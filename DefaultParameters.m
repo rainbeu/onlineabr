@@ -42,6 +42,7 @@ handles.Setup.Stimulus.LevelThreshold = false; % for monaural level threshold:
                                                % to desired level steps
 
 handles.Setup.Stimulus.UseSignSwapping = true;
+handles.Setup.Stimulus.Frozen = true;
 
 handles.Setup.Stimulus.PresentationType      = 'L/R/B';
 
