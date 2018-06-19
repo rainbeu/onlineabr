@@ -67,6 +67,7 @@ handles.Setup.Recording.FileName    = ['data/Carfax_datafile_',handles.Setup.Sti
 handles.Setup.Recording.EEGCh       = 2;
 handles.Setup.Recording.MicCh       = [4 5];
 handles.Setup.Recording.TrgCh       = 3;
+handles.Setup.Recording.SaveCh      = [6 7];
 
 handles.Setup.Recording.ExtraSmp    = 4800;
 handles.Setup.Recording.PreZeros    = 480;

@@ -396,7 +396,7 @@ end
 fwrite(fid,'ABRdata','char');
 fwrite(fid,datetime,'char');
 fwrite(fid,fs,'uint32');
-fwrite(fid,Hw.RecCh,'uint16');
+fwrite(fid,max(Hw.RecCh, max(Rc.SaveCh)),'uint16');
 fwrite(fid,stS.RecSize,'uint32');
 fwrite(fid,TimeOffset,'double');
 fwrite(fid,InputScalingFactor_uV,'double');
@@ -418,6 +418,8 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
         else
             recording = lastsignal;
         end
+        
+        recording(1:length(signal), Rc.SaveCh) = signal;
         
         % write raw data to file
         fwrite(fid,reshape(recording.',[],1),'float32');
