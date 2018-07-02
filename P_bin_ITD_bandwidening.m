@@ -3,6 +3,7 @@ handles.Setup.Stimulus.ITD = [-600 -300 -120 -100 -80 -40 0 40 80 100 120 300 60
 handles.Setup.Stimulus.Level = 60; % dB SPL after calibration
 
 handles.Setup.Recording.MaxRepsPerCond = 20;
+handles.Setup.Recording.Randomization = 'fixed'; % use 'fixed' for a pre-randomized list of repetitions, default: 'running'
 
 handles.Setup.Recording.ArtefactThr = 20;  % µV
 handles.Setup.Recording.RejectArtefacts = false;%true;

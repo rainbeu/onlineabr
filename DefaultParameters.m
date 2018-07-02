@@ -79,6 +79,7 @@ handles.Setup.Recording.ArtefactThr = 200; % µV
 handles.Setup.Recording.RejectArtefacts = true;
 
 handles.Setup.Recording.MaxRepsPerCond = 500;
+handles.Setup.Recording.Randomization = 'running'; % use 'fixed' for a pre-randomized list of repetitions 
 
 %% sound card
 %% peak voltages

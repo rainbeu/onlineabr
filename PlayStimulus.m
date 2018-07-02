@@ -401,6 +401,8 @@ fwrite(fid,stS.RecSize,'uint32');
 fwrite(fid,TimeOffset,'double');
 fwrite(fid,InputScalingFactor_uV,'double');
 
+% prepare index list if necessary
+[~, ~, St, ~] = GetNextStimulusIndices(St, Rc);
 
 %% play/rec loop
 
@@ -477,11 +479,14 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
         
     end
     
+    [itdidx, ildidx, St, bR] = GetNextStimulusIndices(St, Rc);
+	bRunning = bR && bRunning;
+    
     % prepare next stimulus
     switch St.PresentationType
         case 'L/R/B'
             lastildidx = ildidx;
-            ildidx     = randi(length(St.ILD),1);
+%             ildidx     = randi(length(St.ILD),1);
             if ~St.LevelThreshold
                 % positive ILD => softer left (1), louder right (2)
                 LeftILDFactor  = 10^(-St.ILD(ildidx)/2/20);
@@ -491,14 +496,14 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
                 RightILDFactor = 10^(+St.ILD(ildidx)/20);
             end
             lastitdidx = itdidx;
-            itdidx    = randi(length(St.ITD)+2,1);
+%             itdidx    = randi(length(St.ITD)+2,1);
         case 'simple binaural'
             lastildidx = ildidx;
-            ildidx     = randi(length(St.ILD),1);
+%             ildidx     = randi(length(St.ILD),1);
             LeftMaskerFactor  = 10^(+St.ILD(ildidx)/20);
             RightMaskerFactor = 10^(+St.ILD(ildidx)/20);
             lastitdidx = itdidx;
-            itdidx    = randi(length(St.ITD),1);
+%             itdidx    = randi(length(St.ITD),1);
             LeftStimFactor  = 10^(+St.ITD(itdidx)/20);
             RightStimFactor = 10^(+St.ITD(itdidx)/20);
     end
@@ -604,7 +609,8 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
         
         Data(:,5:6) = Mic(:,1:2,BinIdx,ILDix);
         Data(:,7:8) = Mic(:,3:4,BinIdx,ILDix);
-        [bRunning,ITDix,ILDix] = OnlineABR(sDisplayCallback,stS,Data,TimeOffset);
+        [bR,ITDix,ILDix] = OnlineABR(sDisplayCallback,stS,Data,TimeOffset);
+        bRunning = bR && bRunning;
         
         if ArtefactCounter > 0
             fprintf('artefacts rejected: %1.0f\n', ArtefactCounter);
