@@ -1,5 +1,4 @@
-%handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_fake_0000-00-00.mat';
-handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_Frini_2018-06-28.mat';
+handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_fake_0000-00-00.mat';
 
 %%
 handles.Setup.Fs                  = 48000;

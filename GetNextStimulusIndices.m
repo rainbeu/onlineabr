@@ -28,9 +28,13 @@ function [itdidx, ildidx, St, bRunning] = GetNextStimulusIndices(St, Rc)
                 [T, L] = ndgrid(1:length(St.ITD), 1:length(St.ILD));
                 T = T(:);
                 L = L(:);
+                St.indexlist = [];
                 for r = 1:Rc.MaxRepsPerCond
                     order = randperm(length(T));
                     St.indexlist = [St.indexlist; [T(order), L(order)]];
                 end
+                itdidx = [];
+                ildidx = [];
+                St.indexpointer = 0;
             end
     end

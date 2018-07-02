@@ -16,7 +16,7 @@ handles.Setup.Stimulus.Frequency      = 1000; % modulation frequency
 handles.Setup.Stimulus.LowPassFrequency = 2000; % for transposedtone (max 1/2 carrier freq, far above mod freq, glättet Modulator)
 handles.Setup.Stimulus.CarrierFrequency = 6000; % for transposedtone
 handles.Setup.Stimulus.Duration = 0.125;  % seconds
-handles.Setup.Stimulus.Window = 'onoffset';
+handles.Setup.Stimulus.Window = 'hann';
 handles.Setup.Stimulus.RampDur = 0.025;  % seconds
 
 
