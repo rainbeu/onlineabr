@@ -2,6 +2,14 @@ function [stimulus, TimeOffset, shiftstim, masker, St, MaskerSamples, mWin] = Pr
     N = round(St.Duration*fs);
     
     masker = [0 0];
+
+    % workaround for mismatched DefaultParameters.m (or P_*.m)
+    % with cleaned up PrepareStimulus (only Bandwidth, no BandWidth)
+    if isfield(St, 'BandWidth') && ~isfield(St, 'Bandwidth')
+        St.Bandwidth = St.BandWidth;
+        St = rmfield(St, 'BandWidth');
+    end
+
     
     switch St.Type
         case 'tone'
@@ -83,7 +91,7 @@ function [stimulus, TimeOffset, shiftstim, masker, St, MaskerSamples, mWin] = Pr
             % St.BufferLen
             % St.IAC
             % St.CenterFreq
-            % St.BandWidth
+            % St.Bandwidth
             % St.MaskerLevel
             % St.MaskerDuration
             % St.StimOnsetDelay
@@ -102,7 +110,7 @@ function [stimulus, TimeOffset, shiftstim, masker, St, MaskerSamples, mWin] = Pr
             end
             f = (0:St.BufferLen-1).'/St.BufferLen * fs;
             f(f>=fs/2) = f(f>=fs/2) - fs;
-            masker = real(ifft(bsxfun(@times,fft(masker),abs(abs(f)-St.CenterFreq) < St.BandWidth)));
+            masker = real(ifft(bsxfun(@times,fft(masker),abs(abs(f)-St.CenterFreq) < St.Bandwidth)));
             masker = bsxfun(@rdivide,masker,std(masker));
             
             mRMS = 0;
