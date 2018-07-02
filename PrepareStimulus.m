@@ -1,4 +1,4 @@
-function [stimulus, TimeOffset, shiftstim, masker, St] = PrepareStimulus(fs, St, Hw, SingleITDIndex)
+function [stimulus, TimeOffset, shiftstim, masker, St, MaskerSamples, mWin] = PrepareStimulus(fs, St, Hw, SingleITDIndex)
     N = round(St.Duration*fs);
     
     masker = [0 0];
@@ -245,6 +245,7 @@ function [stimulus, TimeOffset, shiftstim, masker, St] = PrepareStimulus(fs, St,
         case 'simple binaural'
             St.ILD = St.MaskerLevelOffsets;
             St.ITD = St.StimulusLevelOffsets;
+            shiftstim = stimulus;
     end
     
     %% transposed stimulus generation

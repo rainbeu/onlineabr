@@ -306,7 +306,7 @@ end
 %         end
 % end
 
-[stimulus, TimeOffset, shiftstim, masker, St] = PrepareStimulus(fs, St, Hw, []);
+[stimulus, TimeOffset, shiftstim, masker, St, MaskerSamples, mWin] = PrepareStimulus(fs, St, Hw, []);
 
 %% trigger
 trigger = zeros(size(stimulus,1),1);
@@ -514,7 +514,7 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
     lastsignal(end+1:stS.RecSize, :) = 0;
     
     if ~isfield(St, 'Frozen') || ~St.Frozen
-        [stimulus, TimeOffset, shiftstim, masker, St] = PrepareStimulus(fs, St, Hw, itdidx-2);
+        [stimulus, TimeOffset, shiftstim, masker, St, MaskerSamples, mWin] = PrepareStimulus(fs, St, Hw, itdidx-2);
     end
     
     switch St.PresentationType
@@ -627,7 +627,7 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
     if counter > 0
         PTime = Time;
         Time = toc;
-        disp(Time-PTime);
+%         disp(Time-PTime);
         Delta = (Time-PTime) - AvgPeriod;
         AvgPeriod = AvgPeriod + Delta/counter;
         VarPeriod = VarPeriod + Delta * ((Time-PTime) - AvgPeriod);
