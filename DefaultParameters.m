@@ -1,4 +1,5 @@
-handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_fake_0000-00-00.mat';
+%handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_fake_0000-00-00.mat';
+handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_Frini_2018-06-28.mat';
 
 %%
 handles.Setup.Fs                  = 48000;
@@ -63,7 +64,7 @@ handles.Setup.Stimulus.MaskerRampDur         = 0;        % seconds
 handles.Setup.Stimulus.MaskerFrozen          = true;        %
 
 
-handles.Setup.Recording.FileName    = ['data/Carfax_datafile_',handles.Setup.Stimulus.Type,'_',num2str(handles.Setup.Stimulus.Level),'dB'];
+handles.Setup.Recording.FileName    = ['data/Frini_',handles.Setup.Stimulus.Type,'_',num2str(handles.Setup.Stimulus.Level),'dB'];
 handles.Setup.Recording.EEGCh       = 2;
 handles.Setup.Recording.MicCh       = [4 5];
 handles.Setup.Recording.TrgCh       = 3;

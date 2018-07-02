@@ -1,17 +1,17 @@
-handles.Setup.Stimulus.ITD = [-120 -80 -40 0 40 80 120] * 1e-6;  % (micro-)seconds
+handles.Setup.Stimulus.ITD = [-600 -300 -120 -100 -80 -40 0 40 80 100 120 300 600] * 1e-6;  % (micro-)seconds[-120 -80 -40 0 40 80 120] * 1e-6;  % (micro-)seconds
 
-handles.Setup.Stimulus.Level = 80; % dB SPL after calibration
+handles.Setup.Stimulus.Level = 60; % dB SPL after calibration
 
-handles.Setup.Recording.MaxRepsPerCond = 500;
+handles.Setup.Recording.MaxRepsPerCond = 20;%500;
 
-handles.Setup.Recording.ArtefactThr = 200;  % µV
-handles.Setup.Recording.RejectArtefacts = true;
+handles.Setup.Recording.ArtefactThr = 20;  % µV
+handles.Setup.Recording.RejectArtefacts = false;%true;
 
 %%
 
 handles.Setup.Stimulus.ILD = [0]; % dB, if LevelThreshold = true (cf. below), use as level steps
 handles.Setup.Stimulus.Type = 'tone';
-handles.Setup.Stimulus.Frequency      = 900;%1250;
+handles.Setup.Stimulus.Frequency      = 1250;
 handles.Setup.Stimulus.Duration = 0.125;  % seconds
 handles.Setup.Stimulus.Window = 'onoffset';
 handles.Setup.Stimulus.RampDur = 0.025;  % seconds

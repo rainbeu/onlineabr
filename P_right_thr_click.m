@@ -1,4 +1,4 @@
-handles.Setup.Stimulus.StimulusLevelOffsets  = [60,70]; % dB re stimulus level ("Level")
+handles.Setup.Stimulus.StimulusLevelOffsets  = [80,90]; % dB re stimulus level ("Level")
 handles.Setup.Stimulus.StimulusSide =  'R';
 
 handles.Setup.Recording.MaxRepsPerCond = 500;
@@ -27,7 +27,7 @@ handles.Setup.Recording.ExtraSmp    = 4800;
 handles.Setup.Recording.PreTime     = 0.004;
 handles.Setup.Recording.RecTime     = 0.015;
 
-handles.Setup.Recording.FileName    = ['data/Carfax_datafile_',handles.Setup.Stimulus.Type,...
+handles.Setup.Recording.FileName    = ['data/Azad_datafile_',handles.Setup.Stimulus.Type,...
     '_',handles.Setup.Stimulus.StimulusSide,...
     '_',num2str(min(handles.Setup.Stimulus.StimulusLevelOffsets)),...
     '-',num2str(max(handles.Setup.Stimulus.StimulusLevelOffsets)),'dB'];
