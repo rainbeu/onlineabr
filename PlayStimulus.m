@@ -711,6 +711,8 @@ if fid > 0
     save([filename '.mat'],'Conditions','AvgC','Avg','MicC','Mic','St','Hw','Rc');
 end
 
+St = rmfield(St, 'temp');
+
 stS.Stimulus  = St;
 stS.Hardware  = Hw;
 stS.Recording = Rc;
