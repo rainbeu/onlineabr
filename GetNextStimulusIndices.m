@@ -17,24 +17,24 @@ function [itdidx, ildidx, St, bRunning] = GetNextStimulusIndices(St, Rc)
                     itdidx    = randi(length(St.ITD),1);
             end
         case 'fixed'
-            if isfield(St, 'indexlist') && isfield(St, 'indexpointer')
-                St.indexpointer = St.indexpointer + 1;
-                if St.indexpointer+1 > size(St.indexlist, 1)
+            if isfield(St, 'temp') && isfield(St.temp, 'indexlist') && isfield(St.temp, 'indexpointer')
+                St.temp.indexpointer = St.temp.indexpointer + 1;
+                if St.temp.indexpointer+1 > size(St.temp.indexlist, 1)
                     bRunning = false;
                 end
-                itdidx = St.indexlist(St.indexpointer, 1);
-                ildidx = St.indexlist(St.indexpointer, 2);
+                itdidx = St.temp.indexlist(St.temp.indexpointer, 1);
+                ildidx = St.temp.indexlist(St.temp.indexpointer, 2);
             else
                 [T, L] = ndgrid(1:length(St.ITD), 1:length(St.ILD));
                 T = T(:);
                 L = L(:);
-                St.indexlist = [];
+                St.temp.indexlist = [];
                 for r = 1:Rc.MaxRepsPerCond
                     order = randperm(length(T));
-                    St.indexlist = [St.indexlist; [T(order), L(order)]];
+                    St.temp.indexlist = [St.temp.indexlist; [T(order), L(order)]];
                 end
                 itdidx = [];
                 ildidx = [];
-                St.indexpointer = 0;
+                St.temp.indexpointer = 0;
             end
     end
