@@ -12,7 +12,7 @@ handles.Setup.Recording.RejectArtefacts = false;%true;
 
 handles.Setup.Stimulus.ILD = [0]; % dB, if LevelThreshold = true (cf. below), use as level steps
 handles.Setup.Stimulus.Type = 'transposedtone';
-handles.Setup.Stimulus.Frequency      = 1000; % modulation frequency
+handles.Setup.Stimulus.Frequency      = 500; % modulation frequency
 handles.Setup.Stimulus.LowPassFrequency = 2000; % for transposedtone (max 1/2 carrier freq, far above mod freq, glättet Modulator)
 handles.Setup.Stimulus.CarrierFrequency = 6000; % for transposedtone
 handles.Setup.Stimulus.Duration = 0.125;  % seconds
