@@ -10,10 +10,10 @@ function [itdidx, ildidx, St, bRunning] = GetNextStimulusIndices(St, Rc)
         case 'running'
             switch St.PresentationType
                 case 'L/R/B'
-                    ildidx     = randi(length(St.ILD),1);
+                    ildidx    = randi(length(St.ILD),1);
                     itdidx    = randi(length(St.ITD)+2,1);
                 case 'simple binaural'
-                    ildidx     = randi(length(St.ILD),1);
+                    ildidx    = randi(length(St.ILD),1);
                     itdidx    = randi(length(St.ITD),1);
             end
         case 'fixed'

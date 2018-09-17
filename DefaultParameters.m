@@ -1,5 +1,5 @@
 %handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_fake_0000-00-00.mat';
-handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_GEK0054_2018-07-05.mat';
+handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_Ivy_2018-08-07.mat';
 
 %%
 handles.Setup.Fs                  = 48000;
@@ -64,7 +64,7 @@ handles.Setup.Stimulus.MaskerRampDur         = 0;        % seconds
 handles.Setup.Stimulus.MaskerFrozen          = true;        %
 
 
-handles.Setup.Recording.FileName    = ['data/GEK0054_',handles.Setup.Stimulus.Type,'_',num2str(handles.Setup.Stimulus.Level),'dB'];
+handles.Setup.Recording.FileName    = ['data/Ivy_',handles.Setup.Stimulus.Type,'_',num2str(handles.Setup.Stimulus.Level),'dB'];
 handles.Setup.Recording.EEGCh       = 2;
 handles.Setup.Recording.MicCh       = [4 5];
 handles.Setup.Recording.TrgCh       = 3;
@@ -80,6 +80,7 @@ handles.Setup.Recording.RejectArtefacts = true;
 
 handles.Setup.Recording.MaxRepsPerCond = 500;
 handles.Setup.Recording.Randomization = 'running'; % use 'fixed' for a pre-randomized list of repetitions 
+handles.Setup.Recording.addDateTime2filename = 1;
 
 %% sound card
 %% peak voltages

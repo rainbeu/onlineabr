@@ -368,7 +368,11 @@ Conditions = nan((Rc.MaxRepsPerCond*2)*(length(St.ITD)+2)*length(St.ILD),4);
 %% data file
 datetime = datestr(now,'yyyy-mm-dd-HH-MM-SS');
 
-filename = [Rc.FileName '_' datetime];
+if Rc.addDateTime2filename
+    filename = [Rc.FileName '_' datetime];
+else
+    filename = Rc.FileName;
+end
 bAgain = true;
 while bAgain 
     answer = inputdlg('Enter file name (without extension)','Recording file name',1,{filename},struct('Resize','on','WindowStyle','modal','Interpreter','none'));
@@ -479,14 +483,16 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
         
     end
     
+    % save previous indices for processing the recording in the next loop
+    lastildidx = ildidx;
+    lastitdidx = itdidx;
+    
     [itdidx, ildidx, St, bR] = GetNextStimulusIndices(St, Rc);
 	bRunning = bR && bRunning;
     
     % prepare next stimulus
     switch St.PresentationType
         case 'L/R/B'
-            lastildidx = ildidx;
-%             ildidx     = randi(length(St.ILD),1);
             if ~St.LevelThreshold
                 % positive ILD => softer left (1), louder right (2)
                 LeftILDFactor  = 10^(-St.ILD(ildidx)/2/20);
@@ -495,19 +501,12 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
                 LeftILDFactor  = 10^(+St.ILD(ildidx)/20);
                 RightILDFactor = 10^(+St.ILD(ildidx)/20);
             end
-            lastitdidx = itdidx;
-%             itdidx    = randi(length(St.ITD)+2,1);
         case 'simple binaural'
-            lastildidx = ildidx;
-%             ildidx     = randi(length(St.ILD),1);
             LeftMaskerFactor  = 10^(+St.ILD(ildidx)/20);
             RightMaskerFactor = 10^(+St.ILD(ildidx)/20);
-            lastitdidx = itdidx;
-%             itdidx    = randi(length(St.ITD),1);
             LeftStimFactor  = 10^(+St.ITD(itdidx)/20);
             RightStimFactor = 10^(+St.ITD(itdidx)/20);
     end
-    
     
     if St.UseSignSwapping
         lastsign  = sign;

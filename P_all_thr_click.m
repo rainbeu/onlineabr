@@ -1,5 +1,5 @@
 handles.Setup.Stimulus.ITD = 0;  % (micro-)seconds
-handles.Setup.Stimulus.ILD = [50 60 70];%[40 50 60 70 80 90];  % level relative to Stimulus.Level in dB
+handles.Setup.Stimulus.ILD = [70:10:90];%[40 50 60 70 80 90];  % level relative to Stimulus.Level in dB
 
 handles.Setup.Stimulus.Level = 0; % dB SPL after calibration (base value) (plus ILD values)
 
