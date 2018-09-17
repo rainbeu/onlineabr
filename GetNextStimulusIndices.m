@@ -25,7 +25,12 @@ function [itdidx, ildidx, St, bRunning] = GetNextStimulusIndices(St, Rc)
                 itdidx = St.temp.indexlist(St.temp.indexpointer, 1);
                 ildidx = St.temp.indexlist(St.temp.indexpointer, 2);
             else
-                [T, L] = ndgrid(1:length(St.ITD), 1:length(St.ILD));
+                switch St.PresentationType
+                    case 'L/R/B'
+                        [T, L] = ndgrid(1:length(St.ITD)+2, 1:length(St.ILD));
+                    case 'simple binaural'
+                        [T, L] = ndgrid(1:length(St.ITD), 1:length(St.ILD));
+                end
                 T = T(:);
                 L = L(:);
                 St.temp.indexlist = [];
