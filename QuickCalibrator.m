@@ -19,12 +19,19 @@ if 2 ~= exist('system_settings')
 end
 stS = system_settings('quickcalibrator');
 
+bSkipLeft = false;
 fChirpAmp = stS.fChirpAmp;     
 fCalibrationSinusAmp = stS.fCalibrationSinusAmp;  
 fCalibrationFrequency = stS.fCalibrationFrequency;
 if length(varargin) >= 2 && strcmpi(varargin{2},'cross')
     mfOutInChannelList = stS.mfCrossChannelList;         
     sExpName = [sExpName '_crosstalk'];
+elseif length(varargin) >= 2 && strcmpi(varargin{2},'right')
+    mfOutInChannelList = stS.mfOutInChannelList;
+    bSkipLeft = true;
+elseif length(varargin) >= 2 && strcmpi(varargin{2},'left')
+    mfOutInChannelList = stS.mfOutInChannelList;
+    bSkipLeft = false;
 else
     mfOutInChannelList = stS.mfOutInChannelList;         
 end
@@ -56,6 +63,8 @@ else
         case 'em23046'
             MicFilter = stS.MicFilter;
         case 'er-7c_ma3_40'
+            MicFilter(:,4:5) = stS.MicFilter(:,[6 6]);
+        case 'er-7c_ma3_10'
             MicFilter(:,4:5) = stS.MicFilter(:,[6 6]);
         otherwise
             MicFilter(4097,1:max(stS.mfOutInChannelList(:,2))+1) = 0;
@@ -112,6 +121,9 @@ for nChannelIdx = 1:size(mfOutInChannelList,1)
     fprintf('Microphone Sensitivity for Ch %1.0f: %1.2f\n',mfOutInChannelList(nChannelIdx,2)+1,fMicrophoneSensLevel);
     
     tic
+    if bSkipLeft && mfOutInChannelList(nChannelIdx,1) == 0
+        vfRecordedSignal = vfChirpSignal;
+    else
     nRecPage = playrec('playrec',repmat(vfChirpSignal,nRepeats,1),mfOutInChannelList(nChannelIdx,1)+1,nRepeats*length(vfChirpSignal),mfOutInChannelList(nChannelIdx,2)+1);
     fWaitbarHandle = waitbar(0,'playing chirp signal');
     while ~playrec('isFinished')
@@ -121,6 +133,7 @@ for nChannelIdx = 1:size(mfOutInChannelList,1)
     close(fWaitbarHandle);
     vfRecordedSignal = mean(reshape(double(playrec('getRec',nRecPage)),[],nRepeats),2);
     vfRecordedSignal = fftfilt(MicFilter(:, mfOutInChannelList(nChannelIdx,2)+1), vfRecordedSignal);
+    end
     
     vfFullImpulseResponse(:,nChannelIdx) = ifft(fft(vfRecordedSignal)./fft(vfChirpSignal));
     if strcmpi(sSwitchSetting,'probe') || strcmpi(sSwitchSetting,'knowles')

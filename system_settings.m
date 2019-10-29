@@ -41,6 +41,7 @@ if nargin >= 1
                 'ma3_40', 96.2 % old microphone calibration (Knowles FG-23329)
                 'em23046', 94.6 % new microphone calibration from Tytology (Knowles EM-23046)
                 'er-7c_ma3_40', 84.9 % Etymotic ER-7C  via +40 dB on TDT MA3 amplifier in RME Multiface @ -10dBV
+                'er-7c_ma3_10', 30+84.9 % Etymotic ER-7C  via +40 dB on TDT MA3 amplifier in RME Multiface @ -10dBV
                 };
             stSystemSettings.MicFilter(4097,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 0;
             stSystemSettings.MicFilter(1,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 1;
