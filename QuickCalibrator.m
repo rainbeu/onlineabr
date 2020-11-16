@@ -62,10 +62,10 @@ else
     switch sSwitchSetting
         case 'em23046'
             MicFilter = stS.MicFilter;
-        case {'er-7c_ma3_40', 'nadine'}
-            MicFilter(:,4:5) = stS.MicFilter(:,[6 6]);
-        case 'er-7c_ma3_10'
-            MicFilter(:,4:5) = stS.MicFilter(:,[6 6]);
+        case { 'er-7c_ma3_10', 'nadine' }
+            MicFilter = stS.MicFilter;
+        case { 'er-7c_ma3_40', 'christine' }
+            MicFilter = stS.MicFilter;
         otherwise
             MicFilter(4097,1:max(stS.mfOutInChannelList(:,2))+1) = 0;
             MicFilter(1,1:max(stS.mfOutInChannelList(:,2))+1) = 1;
