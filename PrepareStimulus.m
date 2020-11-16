@@ -153,6 +153,7 @@ function [stimulus, TimeOffset, shiftstim, masker, St, MaskerSamples, mWin] = Pr
             MaskerSamples = length(mWin);
         otherwise
             MaskerSamples = length(stimulus);
+            St.BufferLen = MaskerSamples+1;
             masker = zeros(MaskerSamples,2);
             mWin = zeros(MaskerSamples,1);
     end
