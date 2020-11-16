@@ -333,7 +333,7 @@ Avg  = zeros(length(IdxVec),length(St.ITD)+2,length(St.ILD));
 Var  = zeros(length(IdxVec),length(St.ITD)+2,length(St.ILD));
 AvgC = zeros(length(St.ITD)+2,length(St.ILD));
 
-Mic  = zeros(length(IdxVec),length(Rc.MicCh)*2,length(St.ITD)+2,length(St.ILD));
+Mic  = zeros(length(IdxVec),length(Rc.MicCh),length(St.ITD)+2,length(St.ILD));
 MicC = zeros(length(St.ITD)+2,length(St.ILD));
 
 lastpage   = -1;
@@ -461,7 +461,7 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
             end
             
             MicC(lastitdidx,lastildidx)    = MicC(lastitdidx,lastildidx) + 1;
-            Delta                          = lastsign*MicScaling_Pa*[recording(stimstart+IdxVec,Rc.MicCh),lastsignal(512+(1:length(IdxVec)),4:5)] - Mic(:,:,lastitdidx,lastildidx);
+            Delta                          = lastsign*MicScaling_Pa*recording(stimstart+IdxVec,Rc.MicCh) - Mic(:,:,lastitdidx,lastildidx);
             Mic(:,:,lastitdidx,lastildidx) = Mic(:,:,lastitdidx,lastildidx) + Delta/MicC(lastitdidx,lastildidx);
             
         else
@@ -514,7 +514,8 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
         sign      = floor(rand(1)*2)*2-1;
     end
     
-    lastsignal = [[sum(signal,2), zeros(size(signal,1),1), trigger, 10^(-22/20)*signal, zeros(size(signal,1),1)];zeros(Rc.ExtraSmp,Hw.RecCh)];
+%     lastsignal = [[sum(signal,2), zeros(size(signal,1),1), trigger, 10^(-22/20)*signal, zeros(size(signal,1),1)];zeros(Rc.ExtraSmp,Hw.RecCh)];
+    lastsignal = signal;
     lastsignal = [zeros(size(pre_padding,1),size(lastsignal,2));lastsignal];
     lastsignal(end+1:stS.RecSize, :) = 0;
     
@@ -608,7 +609,6 @@ while bRunning && (all(AvgC(:)==0) || min(AvgC(AvgC(:)>0)) < Rc.MaxRepsPerCond)
         Data(1:size(Avg,1),9)        = L+R;
         
         Data(:,5:6) = Mic(:,1:2,BinIdx,ILDix);
-        Data(:,7:8) = Mic(:,3:4,BinIdx,ILDix);
         [bR,ITDix,ILDix] = OnlineABR(sDisplayCallback,stS,Data,TimeOffset);
         bRunning = bR && bRunning;
         
@@ -683,7 +683,6 @@ Data(1:size(Avg,1),4)        = Avg(:,BinIdx,ILDix)-(L+R);
 Data(1:size(Avg,1),9)        = L+R;
 
 Data(:,5:6) = Mic(:,1:2,BinIdx,ILDix);
-Data(:,7:8) = Mic(:,3:4,BinIdx,ILDix);
 [bRunning,ITDix,ILDix] = OnlineABR(sDisplayCallback,stS,Data,TimeOffset);
 
 if ArtefactCounter > 0
