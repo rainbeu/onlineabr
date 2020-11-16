@@ -2,14 +2,14 @@ function [stimulus, TimeOffset, shiftstim, masker, St, MaskerSamples, mWin] = Pr
     N = round(St.Duration*fs);
     
     masker = [0 0];
-
+    
     % workaround for mismatched DefaultParameters.m (or P_*.m)
     % with cleaned up PrepareStimulus (only Bandwidth, no BandWidth)
     if isfield(St, 'BandWidth') && ~isfield(St, 'Bandwidth')
         St.Bandwidth = St.BandWidth;
         St = rmfield(St, 'BandWidth');
     end
-
+    
     
     switch St.Type
         case 'tone'
