@@ -7,8 +7,8 @@ handles.Setup.DisplayTime         = 1;  % display is updated every ... seconds
 handles.Setup.Hardware.DryRun     = false; % for use with real sound hardware
 % handles.Setup.Hardware.DryRun     = true; % for use without actual sound hardware
 
-handles.Setup.Hardware.PlayDev    = 0; % call get_playrec_device_id to obtain these numbers
-handles.Setup.Hardware.RecDev     = 0; % ...
+handles.Setup.Hardware.PlayDev    = get_playrec_device_id; % ASIO was 42 until 2015/07/21, new RME driver
+handles.Setup.Hardware.RecDev     = get_playrec_device_id; % ASIO was 42 until 2015/07/21, new RME driver
 handles.Setup.Hardware.PlayCh     = 6;
 handles.Setup.Hardware.RecCh      = 6;
 handles.Setup.Hardware.BufferSize = 0;
@@ -17,7 +17,7 @@ handles.Setup.Hardware.LevelCorrection = [0 0];
 handles.Setup.Hardware.StimCh     = [1 2];
 handles.Setup.Hardware.TrgCh      = 3;
 
-handles.Setup.Stimulus.Duration       = 0.010; %.010
+handles.Setup.Stimulus.Duration       = 0.010;
 handles.Setup.Stimulus.Type           = 'click'; % 'click';  % 'tone'; % 'wave'; % 'CAP'; % 'transposedtone' 
 handles.Setup.Stimulus.Frequency      = 4000;
 handles.Setup.Stimulus.ModulationDepth = 0;
@@ -29,9 +29,9 @@ handles.Setup.Stimulus.FileTimeOffset = 203/48000;
 handles.Setup.Stimulus.SampleFormat   = 'int16';
 handles.Setup.Stimulus.FileCh         = 1;
 handles.Setup.Stimulus.bDoResample    = false;
-handles.Setup.Stimulus.RampDur        = 0.001; % .001
+handles.Setup.Stimulus.RampDur        = 0.001; 
 handles.Setup.Stimulus.Window         = 'hann'; % 'none';% 'hann'; % 'ongoing'; % 'onoffset'; % 'all';
-handles.Setup.Stimulus.Level          = 80; % dB SPL after calibration
+handles.Setup.Stimulus.Level          = 70; % dB SPL after calibration
 
 handles.Setup.Stimulus.ITD            = [0] * 1e-6;  % sec.
 handles.Setup.Stimulus.ILD            = [0]; % dB
@@ -44,37 +44,39 @@ handles.Setup.Stimulus.LevelThreshold = false; % for monaural level threshold:
 handles.Setup.Stimulus.UseSignSwapping = true;
 handles.Setup.Stimulus.Frozen = true;
 
-handles.Setup.Stimulus.PresentationType      = 'L/R/B';
+% handles.Setup.Stimulus.PresentationType      = 'L/R/B';
+handles.Setup.Stimulus.PresentationType      = 'simple binaural';
 
-% handles.Setup.Stimulus.PresentationType      = 'simple binaural';
-handles.Setup.Stimulus.StimulusSide =  'L'; % 'R';  % 'L+R';
-handles.Setup.Stimulus.MaskerSide   =  'L'; % 'R';  % 'L+R';
+%% configuration for Setup.Stimulus.PresentationType == 'simple binaural'
+handles.Setup.Stimulus.StimulusSide =  'R'; % 'R';  % 'L+R';
+handles.Setup.Stimulus.MaskerSide   =  'R'; % 'R';  % 'L+R';
+%
 
-handles.Setup.Stimulus.BufferLen             = 1;  % samples
+handles.Setup.Stimulus.BufferLen             = 2^16;  % samples
 handles.Setup.Stimulus.IAC                   = 1;      % interaural correlation of masker
-handles.Setup.Stimulus.CenterFreq            = 1250;  % Hz
-handles.Setup.Stimulus.Bandwidth             = 200;  % Hz
-handles.Setup.Stimulus.MaskerLevel           = -inf;     % dB SPL
-handles.Setup.Stimulus.MaskerDuration        = 0; % seconds
-handles.Setup.Stimulus.StimOnsetDelay        = 0; % seconds
-handles.Setup.Stimulus.MaskerLevelOffsets    = 0;  % dB re masker level ("MaskerLevel")
-handles.Setup.Stimulus.StimulusLevelOffsets  = 0;       % dB re stimulus level ("Level")
-handles.Setup.Stimulus.MaskerRampDur         = 0;        % seconds
-handles.Setup.Stimulus.MaskerFrozen          = true;        %
+handles.Setup.Stimulus.CenterFreq            = 6000;  % Hz
+handles.Setup.Stimulus.BandWidth             = 11000;  % Hz
+handles.Setup.Stimulus.MaskerLevel           = 70;     % dB SPL
+handles.Setup.Stimulus.MaskerDuration        = 0.100; % seconds
+handles.Setup.Stimulus.StimOnsetDelay        = 0.101; % seconds
+handles.Setup.Stimulus.MaskerLevelOffsets    = [0 -10 +10];  % dB re masker level ("MaskerLevel")
+handles.Setup.Stimulus.StimulusLevelOffsets  = [0 5];       % dB re stimulus level ("Level")
+handles.Setup.Stimulus.MaskerRampDur         = 0.001;        % seconds
+handles.Setup.Stimulus.MaskerFrozen          = false;        %
 
 
-handles.Setup.Recording.FileName    = ['data/Frini_',handles.Setup.Stimulus.Type,'_',num2str(handles.Setup.Stimulus.Level),'dB'];
-handles.Setup.Recording.EEGCh       = 2;
+handles.Setup.Recording.FileName    = ['data/abrdata'];
+handles.Setup.Recording.EEGCh       = 1;
 handles.Setup.Recording.MicCh       = [4 5];
 handles.Setup.Recording.TrgCh       = 3;
-handles.Setup.Recording.SaveCh      = [6 7];
+handles.Setup.Recording.SaveCh      = [7 8];
 
 handles.Setup.Recording.ExtraSmp    = 4800;
 handles.Setup.Recording.PreZeros    = 480;
 handles.Setup.Recording.PreTime     = 0.004;
 handles.Setup.Recording.RecTime     = 0.015;
 
-handles.Setup.Recording.ArtefactThr = 200; % µV
+handles.Setup.Recording.ArtefactThr = 20; % µV
 handles.Setup.Recording.RejectArtefacts = true;
 
 handles.Setup.Recording.MaxRepsPerCond = 500;

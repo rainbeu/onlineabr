@@ -62,7 +62,7 @@ else
     switch sSwitchSetting
         case 'em23046'
             MicFilter = stS.MicFilter;
-        case 'er-7c_ma3_40'
+        case {'er-7c_ma3_40', 'nadine'}
             MicFilter(:,4:5) = stS.MicFilter(:,[6 6]);
         case 'er-7c_ma3_10'
             MicFilter(:,4:5) = stS.MicFilter(:,[6 6]);
