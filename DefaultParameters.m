@@ -12,6 +12,7 @@ handles.Setup.Hardware.RecDev     = get_playrec_device_id; % ASIO was 42 until 2
 handles.Setup.Hardware.PlayCh     = 6;
 handles.Setup.Hardware.RecCh      = 6;
 handles.Setup.Hardware.BufferSize = 0;
+handles.Setup.Hardware.LatencySamples = 1024;
 
 handles.Setup.Hardware.LevelCorrection = [0 0];
 handles.Setup.Hardware.StimCh     = [1 2];

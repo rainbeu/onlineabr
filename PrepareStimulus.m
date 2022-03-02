@@ -69,15 +69,8 @@ function [stimulus, TimeOffset, shiftstim, masker, St, MaskerSamples, mWin] = Pr
             RMS = db(std(stimulus(1:N,:).*randn(N,size(stimulus,2)),1));
             TimeOffset = 0;
         case 'efr'
-            if ~isempty(St.ModulationDepth) && ~isempty(St.ModulationIndex)
-                error('use only one of ModulationDepth or ModulationIndex and set the other one to empty []');
-            end
-            if isempty(St.ModulationDepth) && ~isempty(St.ModulationIndex)
-                St.ModulationDepth = db2mag(St.ModulationIndex);
-            else
-                St.ModulationIndex = db(St.ModulationDepth);
-            end
-            stimulus = (1-St.ModulationDepth*cos(2*pi*St.Frequency*(0:N-1).'/fs)) ...
+            St.ModulationIndex = db(St.ModulationDepth);
+            stimulus = (1+St.ModulationDepth*cos(2*pi*St.Frequency*(0:N-1).'/fs)) ...
                          .* sin(2*pi*St.CarrierFrequency*(0:N-1).'/fs);
             RMS = db(std(stimulus(1:N,:),1));
             TimeOffset = 0;

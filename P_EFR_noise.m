@@ -1,10 +1,9 @@
 handles.Setup.Stimulus.Duration       = 0.200;
-handles.Setup.Stimulus.Type           = 'efr'; 
+handles.Setup.Stimulus.Type           = 'modulated noise'; 
 handles.Setup.Stimulus.Frequency      = 64;
 
-handles.Setup.Stimulus.ModulationDepth = 1;  % in percent
+handles.Setup.Stimulus.ModulationDepth = 1;  % 0-1
 
-handles.Setup.Stimulus.CarrierFrequency = 4000; 
 handles.Setup.Stimulus.RampDur        = 0.005; 
 handles.Setup.Stimulus.Window         = 'hann'; % 'none';% 'hann'; % 'ongoing'; % 'onoffset'; % 'all';
 handles.Setup.Stimulus.Level          = 0; % dB SPL after calibration

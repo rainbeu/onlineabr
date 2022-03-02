@@ -21,7 +21,7 @@ function stS = PlayStimulus(stS,sDisplayCallback,sFinishedCallback)
         if playrec('isInitialised')
             playrec('reset')
         end
-        playrec('init',fs,Hw.PlayDev,Hw.RecDev,Hw.PlayCh,Hw.RecCh,Hw.BufferSize);
+        playrec('init',fs,Hw.PlayDev,Hw.RecDev,Hw.PlayCh,Hw.RecCh,Hw.BufferSize,Hw.LatencySamples/fs,Hw.LatencySamples/fs);
     else
         fprintf('dry run\n');
     end
@@ -466,10 +466,10 @@ function stS = PlayStimulus(stS,sDisplayCallback,sFinishedCallback)
                 
             else
                 
-                if stimstart+min(IdxVec) >= 1
+                if stimstart+min(IdxVec) < 1
                     PreTimeTooShort = true;
                 end
-                if stimstart+max(IdxVec) <= length(EEG)
+                if stimstart+max(IdxVec) > length(EEG)
                     PostTimeTooShort = true;
                 end
                 TriggerWrongCounter = TriggerWrongCounter + 1;
