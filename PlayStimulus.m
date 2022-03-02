@@ -186,18 +186,18 @@ function stS = PlayStimulus(stS,sDisplayCallback,sFinishedCallback)
     % end
     %
     %
-    % %% load calibration data
-    % Cal = load(Hw.CalFile);
-    % if Cal.nSamplingFrequency ~= fs
-    %     error('calibration and output sampling rates do not match');
-    % end
-    % for ch = 1:length(Hw.StimCh)
-    %     idx = find(Cal.mfOutInChannelList(:,1)+1 == Hw.StimCh(ch),1,'first');
-    %     CalFilter(:,ch)  = Cal.mfFilterCoeffs(:,idx);
-    %     MaxSPL(ch)       = Cal.vfMaxSPL(idx);
-    %     gd               = grpdelay(Cal.mfFilterCoeffs(:,idx),1,size(Cal.mfFilterCoeffs(:,idx),1),fs);
-    %     GroupDelay(ch,1) = mean(gd(2:end))/fs;
-    % end
+    %% load calibration data
+    Cal = load(Hw.CalFile);
+    if Cal.nSamplingFrequency ~= fs
+        error('calibration and output sampling rates do not match');
+    end
+    for ch = 1:length(Hw.StimCh)
+        idx = find(Cal.mfOutInChannelList(:,1)+1 == Hw.StimCh(ch),1,'first');
+        CalFilter(:,ch)  = Cal.mfFilterCoeffs(:,idx);
+        MaxSPL(ch)       = Cal.vfMaxSPL(idx);
+        gd               = grpdelay(Cal.mfFilterCoeffs(:,idx),1,size(Cal.mfFilterCoeffs(:,idx),1),fs);
+        GroupDelay(ch,1) = mean(gd(2:end))/fs;
+    end
     %
     %
     %

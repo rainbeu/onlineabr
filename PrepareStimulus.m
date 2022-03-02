@@ -203,6 +203,7 @@ function [stimulus, TimeOffset, shiftstim, masker, St, MaskerSamples, mWin] = Pr
     switch St.Type
         case 'modulated noise'
             stimulus = [stimulus;zeros(size(CalFilter,1),size(stimulus,2))];
+            TimeOffset = TimeOffset + max(mean(GroupDelay),0);
         case 'CAP'
             stimulus = fftfilt(CalFilter,[stimulus;zeros(size(CalFilter,1),size(stimulus,2))]);
             TimeOffset = TimeOffset + max(mean(GroupDelay),0);
