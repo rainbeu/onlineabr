@@ -13,7 +13,9 @@ handles.Setup.Recording.RejectArtefacts = false;%true;
 handles.Setup.Stimulus.ILD = [0]; % dB, if LevelThreshold = true (cf. below), use as level steps
 handles.Setup.Stimulus.Type = 'narrowband noise';
 handles.Setup.Stimulus.CenterFreq = 1250;
-handles.Setup.Stimulus.Bandwidth = 1000; % for transposedtone (0 200 500 1000 7400)
+handles.Setup.Stimulus.Bandwidth = 500; % [200 500 1000], for 0 use P_bin_ITD_tone.m
+handles.Setup.Stimulus.CenterFreq = 4300; % for bw=7400
+handles.Setup.Stimulus.Bandwidth = 7400; 
 handles.Setup.Stimulus.Duration = 0.125;  % seconds
 handles.Setup.Stimulus.Window = 'hann';
 handles.Setup.Stimulus.RampDur = 0.025;  % seconds
@@ -30,5 +32,5 @@ handles.Setup.Recording.RecTime = 0.250;  % seconds
 
 handles.Setup.Stimulus.UseSignSwapping = true;
 
-%handles.Setup.Recording.FileName    = ['data/Baseo____',handles.Setup.Stimulus.Type,'_',num2str(handles.Setup.Stimulus.CarrierFrequeny/1e3),'k',num2str(handles.Setup.Stimulus.Frequency)];
-
+handles.Setup.Recording.FileName    = ['data/GEK0075_3_4__bw_',num2str(handles.Setup.Stimulus.CenterFreq),'_',num2str(handles.Setup.Stimulus.Bandwidth)];
+handles.Setup.Recording.addDateTime2filename = 0;

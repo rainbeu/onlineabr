@@ -25,7 +25,7 @@ function stS = PlayStimulus(stS,sDisplayCallback,sFinishedCallback)
     else
         fprintf('dry run\n');
     end
-    
+
     %% stimulus generation
     
     % N = round(St.Duration*fs);
@@ -335,11 +335,11 @@ function stS = PlayStimulus(stS,sDisplayCallback,sFinishedCallback)
     
     Mic  = zeros(length(IdxVec),length(Rc.MicCh),length(St.ITD)+2,length(St.ILD));
     MicC = zeros(length(St.ITD)+2,length(St.ILD));
-    
+
     lastpage   = -1;
     page       =  1;
     startpage  =  0;
-    if ~Hw.DryRun
+    if ~Hw.DryRun 
         page      = playrec('playrec',[stimulus*0,trigger],[Hw.StimCh Hw.TrgCh],stS.RecSize,1:Hw.RecCh);
         startpage = page;
     else
@@ -347,28 +347,32 @@ function stS = PlayStimulus(stS,sDisplayCallback,sFinishedCallback)
     % recording = zeros(stS.RecSize,Hw.RecCh);
     signal = 0*stimulus;
     pre_padding = zeros(round(Rc.PreTime*fs)-floor(TimeOffset*fs),3);
-    
+
     lastitdidx = -1; itdidx = -1; lastsign = 1; sign = 1; lastildidx = -1; ildidx = -1;
     stimstart = [];
     ITDix = 1;
     ILDix = 1;
-    
+
     LeftIdx  = 1;
     RightIdx = 2;
-    
+
     mx = 0;
-    
+
     ArtefactCounter = 0;
     TriggerWrongCounter = 0;
     PreTimeTooShort = false;
     PostTimeTooShort = false;
-    
+
     Conditions = nan((Rc.MaxRepsPerCond*2)*(length(St.ITD)+2)*length(St.ILD),4);
-    
+
     %% data file
     datetime = datestr(now,'yyyy-mm-dd-HH-MM-SS');
-    
-    filename = [Rc.FileName '_' datetime];
+
+    if Rc.addDateTime2filename
+        filename = [Rc.FileName '_' datetime];
+    else
+        filename = Rc.FileName;
+    end
     bAgain = true;
     while bAgain
         answer = inputdlg('Enter file name (without extension)','Recording file name',1,{filename},struct('Resize','on','WindowStyle','modal','Interpreter','none'));
@@ -482,38 +486,38 @@ function stS = PlayStimulus(stS,sDisplayCallback,sFinishedCallback)
         [itdidx, ildidx, St, bR] = GetNextStimulusIndices(St, Rc);
         bRunning = bR && bRunning;
         
-        % prepare next stimulus
-        switch St.PresentationType
-            case 'L/R/B'
-                lastildidx = ildidx;
-                %             ildidx     = randi(length(St.ILD),1);
-                if ~St.LevelThreshold
-                    % positive ILD => softer left (1), louder right (2)
-                    LeftILDFactor  = 10^(-St.ILD(ildidx)/2/20);
-                    RightILDFactor = 10^(+St.ILD(ildidx)/2/20);
-                else
-                    LeftILDFactor  = 10^(+St.ILD(ildidx)/20);
-                    RightILDFactor = 10^(+St.ILD(ildidx)/20);
-                end
-                lastitdidx = itdidx;
-                %             itdidx    = randi(length(St.ITD)+2,1);
-            case 'simple binaural'
-                lastildidx = ildidx;
-                %             ildidx     = randi(length(St.ILD),1);
-                LeftMaskerFactor  = 10^(+St.ILD(ildidx)/20);
-                RightMaskerFactor = 10^(+St.ILD(ildidx)/20);
-                lastitdidx = itdidx;
-                %             itdidx    = randi(length(St.ITD),1);
-                LeftStimFactor  = 10^(+St.ITD(itdidx)/20);
-                RightStimFactor = 10^(+St.ITD(itdidx)/20);
-        end
-        
-        
-        if St.UseSignSwapping
-            lastsign  = sign;
-            sign      = floor(rand(1)*2)*2-1;
-        end
-        
+    % prepare next stimulus
+    switch St.PresentationType
+        case 'L/R/B'
+            lastildidx = ildidx;
+%             ildidx     = randi(length(St.ILD),1);
+            if ~St.LevelThreshold
+                % positive ILD => softer left (1), louder right (2)
+                LeftILDFactor  = 10^(-St.ILD(ildidx)/2/20);
+                RightILDFactor = 10^(+St.ILD(ildidx)/2/20);
+            else
+                LeftILDFactor  = 10^(+St.ILD(ildidx)/20);
+                RightILDFactor = 10^(+St.ILD(ildidx)/20);
+            end
+            lastitdidx = itdidx;
+%             itdidx    = randi(length(St.ITD)+2,1);
+        case 'simple binaural'
+            lastildidx = ildidx;
+%             ildidx     = randi(length(St.ILD),1);
+            LeftMaskerFactor  = 10^(+St.ILD(ildidx)/20);
+            RightMaskerFactor = 10^(+St.ILD(ildidx)/20);
+            lastitdidx = itdidx;
+%             itdidx    = randi(length(St.ITD),1);
+            LeftStimFactor  = 10^(+St.ITD(itdidx)/20);
+            RightStimFactor = 10^(+St.ITD(itdidx)/20);
+    end
+    
+    
+    if St.UseSignSwapping
+        lastsign  = sign;
+        sign      = floor(rand(1)*2)*2-1;
+    end
+    
         %     lastsignal = [[sum(signal,2), zeros(size(signal,1),1), trigger, 10^(-22/20)*signal, zeros(size(signal,1),1)];zeros(Rc.ExtraSmp,Hw.RecCh)];
         lastsignal = signal;
         lastsignal = [zeros(size(pre_padding,1),size(lastsignal,2));lastsignal];

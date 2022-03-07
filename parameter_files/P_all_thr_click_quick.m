@@ -1,5 +1,5 @@
 handles.Setup.Stimulus.ITD = 0;  % (micro-)seconds
-handles.Setup.Stimulus.ILD = [40:10:90];  % level relative to Stimulus.Level in dB
+handles.Setup.Stimulus.ILD = [70:10:90];%[40 50 60 70 80 90];  % level relative to Stimulus.Level in dB
 
 handles.Setup.Stimulus.Level = 0; % dB SPL after calibration (base value) (plus ILD values)
 
@@ -27,7 +27,7 @@ handles.Setup.Recording.RecTime = 0.015;  % seconds
 % set this to false for saline test
 handles.Setup.Stimulus.UseSignSwapping = true;
 
-handles.Setup.Recording.FileName    = ['data/GER0261_',handles.Setup.Stimulus.Type,...
+handles.Setup.Recording.FileName    = ['data/GER0776_',handles.Setup.Stimulus.Type,...
     '_','all',...
     '_',num2str(min(handles.Setup.Stimulus.ILD)),...
     '-',num2str(max(handles.Setup.Stimulus.ILD)),'dB'];

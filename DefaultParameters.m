@@ -55,15 +55,15 @@ handles.Setup.Stimulus.MaskerSide   =  'R'; % 'R';  % 'L+R';
 
 handles.Setup.Stimulus.BufferLen             = 2^16;  % samples
 handles.Setup.Stimulus.IAC                   = 1;      % interaural correlation of masker
-handles.Setup.Stimulus.CenterFreq            = 6000;  % Hz
-handles.Setup.Stimulus.BandWidth             = 11000;  % Hz
-handles.Setup.Stimulus.MaskerLevel           = 70;     % dB SPL
-handles.Setup.Stimulus.MaskerDuration        = 0.100; % seconds
-handles.Setup.Stimulus.StimOnsetDelay        = 0.101; % seconds
-handles.Setup.Stimulus.MaskerLevelOffsets    = [0 -10 +10];  % dB re masker level ("MaskerLevel")
-handles.Setup.Stimulus.StimulusLevelOffsets  = [0 5];       % dB re stimulus level ("Level")
-handles.Setup.Stimulus.MaskerRampDur         = 0.001;        % seconds
-handles.Setup.Stimulus.MaskerFrozen          = false;        %
+handles.Setup.Stimulus.CenterFreq            = 1250;  % Hz
+handles.Setup.Stimulus.Bandwidth             = 200;  % Hz
+handles.Setup.Stimulus.MaskerLevel           = -inf;     % dB SPL
+handles.Setup.Stimulus.MaskerDuration        = 0; % seconds
+handles.Setup.Stimulus.StimOnsetDelay        = 0; % seconds
+handles.Setup.Stimulus.MaskerLevelOffsets    = 0;  % dB re masker level ("MaskerLevel")
+handles.Setup.Stimulus.StimulusLevelOffsets  = 0;       % dB re stimulus level ("Level")
+handles.Setup.Stimulus.MaskerRampDur         = 0;        % seconds
+handles.Setup.Stimulus.MaskerFrozen          = true;        %
 
 
 handles.Setup.Recording.FileName    = ['data/abrdata'];
@@ -82,6 +82,7 @@ handles.Setup.Recording.RejectArtefacts = true;
 
 handles.Setup.Recording.MaxRepsPerCond = 500;
 handles.Setup.Recording.Randomization = 'running'; % use 'fixed' for a pre-randomized list of repetitions 
+handles.Setup.Recording.addDateTime2filename = 1;
 
 %% sound card
 %% peak voltages
