@@ -66,7 +66,7 @@ handles.Setup.Stimulus.MaskerRampDur         = 0;        % seconds
 handles.Setup.Stimulus.MaskerFrozen          = true;        %
 
 
-handles.Setup.Recording.FileName    = ['data/abrdata'];
+handles.Setup.Recording.FileName    = ['/home/experiment/data/carolin/ABR/abrdata_'];
 handles.Setup.Recording.EEGCh       = 1;
 handles.Setup.Recording.MicCh       = [4 5];
 handles.Setup.Recording.TrgCh       = 3;

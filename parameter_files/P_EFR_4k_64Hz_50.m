@@ -1,15 +1,15 @@
 handles.Setup.Stimulus.Duration       = 0.200;
 handles.Setup.Stimulus.Type           = 'efr'; 
-handles.Setup.Stimulus.Frequency      = 64;
+handles.Setup.Stimulus.Frequency      = 64; % modulation freq
 
-handles.Setup.Stimulus.ModulationDepth = 1;  % in percent
+handles.Setup.Stimulus.ModulationDepth = 0.5;  % in ratio: 0.0 to 1.0; one per ABR recording only!
 
 handles.Setup.Stimulus.CarrierFrequency = 4000; 
 handles.Setup.Stimulus.RampDur        = 0.005; 
 handles.Setup.Stimulus.Window         = 'hann'; % 'none';% 'hann'; % 'ongoing'; % 'onoffset'; % 'all';
 handles.Setup.Stimulus.Level          = 0; % dB SPL after calibration
 
-handles.Setup.Stimulus.StimulusLevelOffsets  = [65 70 75 80 85]; % dB re stimulus level ("Level")
+handles.Setup.Stimulus.StimulusLevelOffsets  = 80; %[65 70 75 80 85]; % dB re stimulus level ("Level")
 
 handles.Setup.Recording.MaxRepsPerCond = 200;
 
@@ -18,10 +18,10 @@ handles.Setup.Stimulus.LevelThreshold = false; % for monaural level threshold:
                                                % level to 0, set ILD list
                                                % to desired level steps
 
-handles.Setup.Stimulus.UseSignSwapping = true;
+handles.Setup.Stimulus.UseSignSwapping = true; % true: envelope decisive
 
 % handles.Setup.Stimulus.PresentationType      = 'L/R/B';
-handles.Setup.Stimulus.PresentationType      = 'simple binaural';
+handles.Setup.Stimulus.PresentationType      = 'simple binaural'; % needs definition of stimulus side, see below
 
 %% configuration for Setup.Stimulus.PresentationType == 'simple binaural'
 handles.Setup.Stimulus.StimulusSide =  'L+R'; % 'L', 'R', 'L+R'
@@ -30,7 +30,7 @@ handles.Setup.Stimulus.StimulusSide =  'L+R'; % 'L', 'R', 'L+R'
 handles.Setup.Recording.ExtraSmp    = 1500;
 handles.Setup.Recording.PreZeros    = 480;
 handles.Setup.Recording.PreTime     = 0.004;
-handles.Setup.Recording.RecTime     = 1/3.1;
+handles.Setup.Recording.RecTime     = 1/3.1; % =1/repetition rate
 
 handles.Setup.Recording.ArtefactThr = 20; % µV
 handles.Setup.Recording.RejectArtefacts = true;
