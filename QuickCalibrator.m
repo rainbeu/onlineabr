@@ -1,4 +1,4 @@
-function [vfFullImpulseResponse] = QuickCalibrator(sSwitchSetting,sExpName,varargin)
+function varargout = QuickCalibrator(sSwitchSetting,sExpName,varargin)
     
     max_filter_gain = 10;
     if ~exist('sExpName','var') || isempty(sExpName)
@@ -233,15 +233,19 @@ function [vfFullImpulseResponse] = QuickCalibrator(sSwitchSetting,sExpName,varar
         
     end
     
-    save(sprintf('EqFiltCoeff_%s_%s.mat',sExpName,datestr(now,'yyyy-mm-dd')),'mfFilterCoeffs','nSamplingFrequency','mfOutInChannelList','vfMaxSPL','fCalibrationFrequency','fMicrophoneSensLevels');
+    save(sprintf('calibration/EqFiltCoeff_%s_%s.mat',sExpName,datestr(now,'yyyy-mm-dd')),'mfFilterCoeffs','nSamplingFrequency','mfOutInChannelList','vfMaxSPL','fCalibrationFrequency','fMicrophoneSensLevels');
     %mfFilterCoeffs = mfOldFilterCoeffs;
-    %save(sprintf('EqFiltCoeff_%s_%s_DONOTUSEFORABR.mat',sExpName,datestr(now,'yyyy-mm-dd')),'mfFilterCoeffs','nSamplingFrequency','mfOutInChannelList','vfMaxSPL','fCalibrationFrequency','fMicrophoneSensLevels');
-    save(sprintf('EqImpResp_%s_%s.mat',sExpName,datestr(now,'yyyy-mm-dd')),'vfFullImpulseResponse','nSamplingFrequency','mfOutInChannelList','vfMaxSPL','fCalibrationFrequency','fMicrophoneSensLevels');
+    %save(sprintf('calibration/EqFiltCoeff_%s_%s_DONOTUSEFORABR.mat',sExpName,datestr(now,'yyyy-mm-dd')),'mfFilterCoeffs','nSamplingFrequency','mfOutInChannelList','vfMaxSPL','fCalibrationFrequency','fMicrophoneSensLevels');
+    save(sprintf('calibration/EqImpResp_%s_%s.mat',sExpName,datestr(now,'yyyy-mm-dd')),'vfFullImpulseResponse','nSamplingFrequency','mfOutInChannelList','vfMaxSPL','fCalibrationFrequency','fMicrophoneSensLevels');
     
     disp('The maximal output levels are:')
     for nChannelIdx = 1:size(mfOutInChannelList,1)
-        disp(sprintf('output channel: %u, maximum SPL: %5.1f',mfOutInChannelList(nChannelIdx,1),vfMaxSPL(nChannelIdx)));
+        fprintf('output channel: %u, maximum SPL: %5.1f\n',mfOutInChannelList(nChannelIdx,1),vfMaxSPL(nChannelIdx));
     end
     
     playrec('reset');
+    
+    if nargout >= 1
+        varargout{1} = vfFullImpulseResponse;
+    end
     

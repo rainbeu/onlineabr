@@ -47,24 +47,26 @@ if nargin >= 1
                 };
             stSystemSettings.MicFilter(4097,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 0;
             stSystemSettings.MicFilter(1,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 1;
-            if exist('ER-7C B-1128.mat','file') 
-                load 'ER-7C B-1128.mat' flt
+            if exist('mic/ER-7C B-1128.mat','file') 
+                load 'mic/ER-7C B-1128.mat' flt
                 stSystemSettings.MicFilter(1:length(flt),4) = flt(:);
+                fprintf('using reference calibration for ER-7C #1128, left channel\n');
             end
-            if exist('ER-7C B-1130.mat','file')
-                load 'ER-7C B-1130.mat' flt
+            if exist('mic/ER-7C B-1130.mat','file')
+                load 'mic/ER-7C B-1130.mat' flt
                 stSystemSettings.MicFilter(1:length(flt),5) = flt(:);
+                fprintf('using reference calibration for ER-7C #1130, right channel\n');
             end
             if strcmp(stSystemSettings.MicrophoneCal, 'nadine')
-                if exist('ER-7C_B-1389.mat','file')
-                    load 'ER-7C_B-1389.mat' flt
+                if exist('mic/ER-7C_B-1389.mat','file')
+                    load 'mic/ER-7C_B-1389.mat' flt
                     ch = stSystemSettings.mfOutInChannelList(1, 2)+1;
                     stSystemSettings.MicFilter(:,ch) = 0;
                     stSystemSettings.MicFilter(1:length(flt),ch) = flt(:);
                     fprintf('using reference calibration for ER-7C #1389, left channel\n');
                 end
-                if exist('ER-7C_B-1289.mat','file')
-                    load 'ER-7C_B-1289.mat' flt
+                if exist('mic/ER-7C_B-1289.mat','file')
+                    load 'mic/ER-7C_B-1289.mat' flt
                     ch = stSystemSettings.mfOutInChannelList(2, 2)+1;
                     stSystemSettings.MicFilter(:,ch) = 0;
                     stSystemSettings.MicFilter(1:length(flt),ch) = flt(:);

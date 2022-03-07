@@ -57,13 +57,16 @@ function OnlineABR_OpeningFcn(hObject, eventdata, handles, varargin)
     
     handles.Setup.hFigure             = hObject;
     
-    DefaultParameters;
-    handles.ParamFileName = 'DefaultParameters';
-    FileName = uigetfile('*.m','Please select parameter script','DefaultParameters.m');
+    [path,~,~] = fileparts(mfilename('fullpath'));
+    run(fullfile(path, 'DefaultParameters.m'));
+    handles.ParamFileName = fullfile(path, 'DefaultParameters.m');
+    [FileName,PathName] = uigetfile('*.m','Please select parameter script','DefaultParameters.m');
     if ~isempty(FileName) && ~isnumeric(FileName)
-        [dummy,name] = fileparts(FileName);
-        eval(name);
-        handles.ParamFileName = name;
+        if exist(fullfile(PathName, 'DefaultParameters.m'), 'file')
+            run(fullfile(PathName, 'DefaultParameters.m'));
+        end
+        run(fullfile(PathName, FileName));
+        handles.ParamFileName = fullfile(PathName, FileName);
     else
         fprintf('using default parameters\n');
     end
@@ -117,12 +120,16 @@ function pbnDelete_Callback(hObject, eventdata, handles)
     
     
 function tbnSetup_Callback(hObject, eventdata, handles)
-    FileName = uigetfile('*.m','Please select parameter script',[handles.ParamFileName '.m']);
+    [FileName,PathName] = uigetfile('*.m','Please select parameter script','DefaultParameters.m');
     if ~isempty(FileName) && ~isnumeric(FileName)
-        [dummy,name] = fileparts(FileName);
-        DefaultParameters;
-        eval(name);
-        handles.ParamFileName = name;
+        [path,~,~] = fileparts(mfilename('fullpath'));
+        run(fullfile(path, 'DefaultParameters.m'));
+        handles.ParamFileName = FileName;
+        if exist(fullfile(PathName, 'DefaultParameters.m'), 'file')
+            run(fullfile(PathName, 'DefaultParameters.m'));
+        end
+        run(fullfile(PathName, FileName));
+        handles.ParamFileName = fullfile(PathName, FileName);        
     end
     set(hObject,'Value',0);
     switch handles.Setup.Stimulus.PresentationType
@@ -148,18 +155,22 @@ function tbnSetup_Callback(hObject, eventdata, handles)
     
     
 function DisplayInfo(handles)
-    Msg = sprintf(['Artefact threshold: %1.1f µV\n\n'...
+    Msg = sprintf([...
+        'Parameter file: %s\n' ...
         'Cal file: %s\n\n'...
+        'Artefact threshold: %1.1f µV\n'...
+        'Max Reps: %1.0f\n\n' ...
+        'Type: %s\n'...
         'Duration: %1.3f ms\n'...
         'Level: %1.1f dB SPL\n'...
-        'Type: %s\n\n'...
-        'Max Reps: %1.0f\n\n'],...
-        handles.Setup.Recording.ArtefactThr,...
-        handles.Setup.Hardware.CalFile,...
-        handles.Setup.Stimulus.Duration/1e-3,...
-        handles.Setup.Stimulus.Level,...
-        handles.Setup.Stimulus.Type,...
-        handles.Setup.Recording.MaxRepsPerCond);
+        ],...
+        handles.ParamFileName, ...
+        handles.Setup.Hardware.CalFile, ...
+        handles.Setup.Recording.ArtefactThr, ...
+        handles.Setup.Recording.MaxRepsPerCond, ...
+        handles.Setup.Stimulus.Type, ...
+        handles.Setup.Stimulus.Duration/1e-3, ...
+        handles.Setup.Stimulus.Level);
     switch handles.Setup.Stimulus.Type
         case 'tone'
             Msg = [Msg sprintf('Frequency: %1.1f Hz\n',handles.Setup.Stimulus.Frequency)];

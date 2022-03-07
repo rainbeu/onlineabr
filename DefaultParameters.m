@@ -1,4 +1,4 @@
-handles.Setup.Hardware.CalFile    = 'EqFiltCoeff_fake_0000-00-00.mat';
+handles.Setup.Hardware.CalFile    = 'calibration/EqFiltCoeff_fake_0000-00-00.mat';
 
 %%
 handles.Setup.Fs                  = 48000;
