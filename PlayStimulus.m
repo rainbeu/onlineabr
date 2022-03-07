@@ -21,7 +21,7 @@ function stS = PlayStimulus(stS,sDisplayCallback,sFinishedCallback)
         if playrec('isInitialised')
             playrec('reset')
         end
-        playrec('init',fs,Hw.PlayDev,Hw.RecDev,Hw.PlayCh,Hw.RecCh,Hw.BufferSize);
+        playrec('init',fs,Hw.PlayDev,Hw.RecDev,Hw.PlayCh,Hw.RecCh,Hw.BufferSize,Hw.LatencySamples/fs,Hw.LatencySamples/fs);
     else
         fprintf('dry run\n');
     end
@@ -186,18 +186,18 @@ function stS = PlayStimulus(stS,sDisplayCallback,sFinishedCallback)
     % end
     %
     %
-    % %% load calibration data
-    % Cal = load(Hw.CalFile);
-    % if Cal.nSamplingFrequency ~= fs
-    %     error('calibration and output sampling rates do not match');
-    % end
-    % for ch = 1:length(Hw.StimCh)
-    %     idx = find(Cal.mfOutInChannelList(:,1)+1 == Hw.StimCh(ch),1,'first');
-    %     CalFilter(:,ch)  = Cal.mfFilterCoeffs(:,idx);
-    %     MaxSPL(ch)       = Cal.vfMaxSPL(idx);
-    %     gd               = grpdelay(Cal.mfFilterCoeffs(:,idx),1,size(Cal.mfFilterCoeffs(:,idx),1),fs);
-    %     GroupDelay(ch,1) = mean(gd(2:end))/fs;
-    % end
+    %% load calibration data
+    Cal = load(Hw.CalFile);
+    if Cal.nSamplingFrequency ~= fs
+        error('calibration and output sampling rates do not match');
+    end
+    for ch = 1:length(Hw.StimCh)
+        idx = find(Cal.mfOutInChannelList(:,1)+1 == Hw.StimCh(ch),1,'first');
+        CalFilter(:,ch)  = Cal.mfFilterCoeffs(:,idx);
+        MaxSPL(ch)       = Cal.vfMaxSPL(idx);
+        gd               = grpdelay(Cal.mfFilterCoeffs(:,idx),1,size(Cal.mfFilterCoeffs(:,idx),1),fs);
+        GroupDelay(ch,1) = mean(gd(2:end))/fs;
+    end
     %
     %
     %
@@ -466,10 +466,10 @@ function stS = PlayStimulus(stS,sDisplayCallback,sFinishedCallback)
                 
             else
                 
-                if stimstart+min(IdxVec) >= 1
+                if stimstart+min(IdxVec) < 1
                     PreTimeTooShort = true;
                 end
-                if stimstart+max(IdxVec) <= length(EEG)
+                if stimstart+max(IdxVec) > length(EEG)
                     PostTimeTooShort = true;
                 end
                 TriggerWrongCounter = TriggerWrongCounter + 1;

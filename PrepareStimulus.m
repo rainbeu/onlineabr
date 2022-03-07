@@ -68,6 +68,12 @@ function [stimulus, TimeOffset, shiftstim, masker, St, MaskerSamples, mWin] = Pr
             stimulus = 1-St.ModulationDepth*cos(2*pi*St.Frequency*(0:N-1).'/fs);
             RMS = db(std(stimulus(1:N,:).*randn(N,size(stimulus,2)),1));
             TimeOffset = 0;
+        case 'efr'
+            St.ModulationIndex = db(St.ModulationDepth);
+            stimulus = (1+St.ModulationDepth*cos(2*pi*St.Frequency*(0:N-1).'/fs)) ...
+                         .* sin(2*pi*St.CarrierFrequency*(0:N-1).'/fs);
+            RMS = db(std(stimulus(1:N,:),1));
+            TimeOffset = 0;
         case {'wave','raw'}
             if strcmp(St.Type,'wave')
                 [stimulus,St.Fs] = wavread(St.FileName);
@@ -197,6 +203,7 @@ function [stimulus, TimeOffset, shiftstim, masker, St, MaskerSamples, mWin] = Pr
     switch St.Type
         case 'modulated noise'
             stimulus = [stimulus;zeros(size(CalFilter,1),size(stimulus,2))];
+            TimeOffset = TimeOffset + max(mean(GroupDelay),0);
         case 'CAP'
             stimulus = fftfilt(CalFilter,[stimulus;zeros(size(CalFilter,1),size(stimulus,2))]);
             TimeOffset = TimeOffset + max(mean(GroupDelay),0);
