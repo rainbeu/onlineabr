@@ -120,7 +120,8 @@ function pbnDelete_Callback(hObject, eventdata, handles)
     
     
 function tbnSetup_Callback(hObject, eventdata, handles)
-    [FileName,PathName] = uigetfile('*.m','Please select parameter script','DefaultParameters.m');
+    PathName = fileparts(handles.ParamFileName);
+    [FileName,PathName] = uigetfile('*.m','Please select parameter script',handles.ParamFileName);
     if ~isempty(FileName) && ~isnumeric(FileName)
         [path,~,~] = fileparts(mfilename('fullpath'));
         run(fullfile(path, 'DefaultParameters.m'));

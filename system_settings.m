@@ -47,13 +47,13 @@ if nargin >= 1
                 };
             stSystemSettings.MicFilter(4097,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 0;
             stSystemSettings.MicFilter(1,1:max(stSystemSettings.mfOutInChannelList(:,2))+1) = 1;
-            if exist('mic/ER-7C B-1128.mat','file') 
-                load 'mic/ER-7C B-1128.mat' flt
+            if exist('~/src/matlab/onlineabr/mic/ER-7C B-1128.mat','file') 
+                load '~/src/matlab/onlineabr/mic/ER-7C B-1128.mat' flt
                 stSystemSettings.MicFilter(1:length(flt),4) = flt(:);
                 fprintf('using reference calibration for ER-7C #1128, left channel\n');
             end
-            if exist('mic/ER-7C B-1130.mat','file')
-                load 'mic/ER-7C B-1130.mat' flt
+            if exist('~/src/matlab/onlineabr/mic/ER-7C B-1130.mat','file')
+                load '~/src/matlab/onlineabr/mic/ER-7C B-1130.mat' flt
                 stSystemSettings.MicFilter(1:length(flt),5) = flt(:);
                 fprintf('using reference calibration for ER-7C #1130, right channel\n');
             end

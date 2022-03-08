@@ -65,7 +65,7 @@ handles.Setup.Stimulus.MaskerFrozen          = true;        %
 
 
 handles.Setup.Recording.FileName    = ['data/st/STG1801_datafile_',handles.Setup.Stimulus.Type,'_',num2str(handles.Setup.Stimulus.Level),'dB'];
-handles.Setup.Recording.EEGCh       = 2;
+handles.Setup.Recording.EEGCh       = 1;
 handles.Setup.Recording.MicCh       = [4 5];
 handles.Setup.Recording.TrgCh       = 3;
 

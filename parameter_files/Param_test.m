@@ -55,7 +55,7 @@ handles.Setup.Hardware.PlayCh     = 6;
 handles.Setup.Hardware.RecCh      = 6;
 
 
-handles.Setup.Recording.EEGCh       = 1;
+handles.Setup.Recording.EEGCh       = 2;
 handles.Setup.Recording.MicCh       = [4 5];
 handles.Setup.Recording.TrgCh       = 3;
 handles.Setup.Recording.SaveCh      = [7 8];

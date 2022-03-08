@@ -66,6 +66,8 @@ function varargout = QuickCalibrator(sSwitchSetting,sExpName,varargin)
                 MicFilter = stS.MicFilter;
             case { 'er-7c_ma3_40', 'christine' }
                 MicFilter = stS.MicFilter;
+            case { 'probe' }
+                MicFilter = stS.MicFilter;
             otherwise
                 MicFilter(4097,1:max(stS.mfOutInChannelList(:,2))+1) = 0;
                 MicFilter(1,1:max(stS.mfOutInChannelList(:,2))+1) = 1;
@@ -233,6 +235,9 @@ function varargout = QuickCalibrator(sSwitchSetting,sExpName,varargin)
         
     end
     
+    if ~exist('calibration', 'dir')
+        mkdir('calibration');
+    end
     save(sprintf('calibration/EqFiltCoeff_%s_%s.mat',sExpName,datestr(now,'yyyy-mm-dd')),'mfFilterCoeffs','nSamplingFrequency','mfOutInChannelList','vfMaxSPL','fCalibrationFrequency','fMicrophoneSensLevels');
     %mfFilterCoeffs = mfOldFilterCoeffs;
     %save(sprintf('calibration/EqFiltCoeff_%s_%s_DONOTUSEFORABR.mat',sExpName,datestr(now,'yyyy-mm-dd')),'mfFilterCoeffs','nSamplingFrequency','mfOutInChannelList','vfMaxSPL','fCalibrationFrequency','fMicrophoneSensLevels');
