@@ -69,10 +69,25 @@ function [stimulus, TimeOffset, shiftstim, masker, St, MaskerSamples, mWin] = Pr
             RMS = db(std(stimulus(1:N,:).*randn(N,size(stimulus,2)),1));
             TimeOffset = 0;
         case 'efr'
+            % envelope following response
             St.ModulationIndex = db(St.ModulationDepth);
             stimulus = (1+St.ModulationDepth*cos(2*pi*St.Frequency*(0:N-1).'/fs)) ...
                          .* sin(2*pi*St.CarrierFrequency*(0:N-1).'/fs);
             RMS = db(std(stimulus(1:N,:),1));
+            TimeOffset = 0;
+        case 'rw-ssp'
+            % Stimulus according to
+            % Noise-Induced Hearing Loss in Gerbil: Round Window Assays of Synapse Loss
+            % Penelope W. C. Jeffers Jérôme Bourien, Artem Diuba, Jean-Luc Puel and Sharon G. Kujawa
+            % doi: 10.3389/fncel.2021.699978
+            N = round(St.Duration*fs);
+            M = 2^nextpow2(N);
+            f = [0:ceil(M/2)-1 -floor(M/2):-1].'/M*fs;
+            flimits = St.Frequency .* 2.^([-1/2 1/2]*1/3);
+            x = real(ifft(fft(randn(M,1)) .* (abs(f)>flimits(1) & abs(f)<=flimits(2))));
+            RMS = db(std(x(1:N,1),1));
+            w = tukeywin(N, 2*St.RampDur/(N/fs));
+            stimulus = [w.*x(1:N); zeros(N,1); -w.*x(1:N); zeros(N,1)];
             TimeOffset = 0;
         case {'wave','raw'}
             if strcmp(St.Type,'wave')
