@@ -483,41 +483,36 @@ function stS = PlayStimulus(stS,sDisplayCallback,sFinishedCallback)
             
         end
         
+        lastildidx = ildidx;
+        lastitdidx = itdidx;
+        
         [itdidx, ildidx, St, bR] = GetNextStimulusIndices(St, Rc);
         bRunning = bR && bRunning;
         
-    % prepare next stimulus
-    switch St.PresentationType
-        case 'L/R/B'
-            lastildidx = ildidx;
-%             ildidx     = randi(length(St.ILD),1);
-            if ~St.LevelThreshold
-                % positive ILD => softer left (1), louder right (2)
-                LeftILDFactor  = 10^(-St.ILD(ildidx)/2/20);
-                RightILDFactor = 10^(+St.ILD(ildidx)/2/20);
-            else
-                LeftILDFactor  = 10^(+St.ILD(ildidx)/20);
-                RightILDFactor = 10^(+St.ILD(ildidx)/20);
-            end
-            lastitdidx = itdidx;
-%             itdidx    = randi(length(St.ITD)+2,1);
-        case 'simple binaural'
-            lastildidx = ildidx;
-%             ildidx     = randi(length(St.ILD),1);
-            LeftMaskerFactor  = 10^(+St.ILD(ildidx)/20);
-            RightMaskerFactor = 10^(+St.ILD(ildidx)/20);
-            lastitdidx = itdidx;
-%             itdidx    = randi(length(St.ITD),1);
-            LeftStimFactor  = 10^(+St.ITD(itdidx)/20);
-            RightStimFactor = 10^(+St.ITD(itdidx)/20);
-    end
-    
-    
-    if St.UseSignSwapping
-        lastsign  = sign;
-        sign      = floor(rand(1)*2)*2-1;
-    end
-    
+        % prepare next stimulus
+        switch St.PresentationType
+            case 'L/R/B'
+                if ~St.LevelThreshold
+                    % positive ILD => softer left (1), louder right (2)
+                    LeftILDFactor  = 10^(-St.ILD(ildidx)/2/20);
+                    RightILDFactor = 10^(+St.ILD(ildidx)/2/20);
+                else
+                    LeftILDFactor  = 10^(+St.ILD(ildidx)/20);
+                    RightILDFactor = 10^(+St.ILD(ildidx)/20);
+                end
+            case 'simple binaural'
+                LeftMaskerFactor  = 10^(+St.ILD(ildidx)/20);
+                RightMaskerFactor = 10^(+St.ILD(ildidx)/20);
+                LeftStimFactor  = 10^(+St.ITD(itdidx)/20);
+                RightStimFactor = 10^(+St.ITD(itdidx)/20);
+        end
+        
+        
+        if St.UseSignSwapping
+            lastsign  = sign;
+            sign      = floor(rand(1)*2)*2-1;
+        end
+        
         %     lastsignal = [[sum(signal,2), zeros(size(signal,1),1), trigger, 10^(-22/20)*signal, zeros(size(signal,1),1)];zeros(Rc.ExtraSmp,Hw.RecCh)];
         lastsignal = signal;
         lastsignal = [zeros(size(pre_padding,1),size(lastsignal,2));lastsignal];
