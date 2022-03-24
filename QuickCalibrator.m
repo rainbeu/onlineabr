@@ -98,7 +98,7 @@ function varargout = QuickCalibrator(sSwitchSetting,sExpName,varargin)
     end
     
     % playrec('init',nSamplingFrequency,stUsedDevice.deviceID,stUsedDevice.deviceID,max(mfOutInChannelList(:,1))+1,max(mfOutInChannelList(:,2))+1,nBufferLen);
-    playrec('init',nSamplingFrequency,stUsedDevice.deviceID,stUsedDevice.deviceID,max(mfOutInChannelList(:,1))+1,max(mfOutInChannelList(:,2))+1);
+    playrec('init',nSamplingFrequency,stUsedDevice.deviceID,stUsedDevice.deviceID,max(mfOutInChannelList(:,1))+1,max(mfOutInChannelList(:,2))+1,0,1024/nSamplingFrequency,1024/nSamplingFrequency);
     
     fChirpDuration = log(nSamplingFrequency/2/fSweepStartFrequency)/log(2^fSweepRate);
     vfChirpSignal = fChirpAmp           *[zeros(nSamplingFrequency/10,1);...
