@@ -375,7 +375,10 @@ function stS = PlayStimulus(stS,sDisplayCallback,sFinishedCallback)
     end
     bAgain = true;
     while bAgain
-        answer = inputdlg('Enter file name (without extension)','Recording file name',1,{filename},struct('Resize','on','WindowStyle','modal','Interpreter','none'));
+        answer = inputdlg('Enter file name (without extension)','Recording file name',...
+                          [1 ceil(length(filename)*1.5)],...   % make width about 50% larger than filename
+                          {filename},...
+                          struct('Resize','on','WindowStyle','modal','Interpreter','none'));
         if ~isempty(answer) && (exist([answer{1} '.dat'],'file') || exist([answer{1} '.mat'],'file'))
             overwrite = questdlg([answer{1} '.dat or ' answer{1} '.mat already exist. Overwrite?'],'Warning','Yes','No','Cancel','No');
             if strcmp(overwrite,'Yes')
@@ -392,7 +395,7 @@ function stS = PlayStimulus(stS,sDisplayCallback,sFinishedCallback)
             return;
         end
     end
-    
+    '
     fid = fopen([filename '.dat'],'w');
     if fid < 0
         error('could not open data file %s for writing',[filename '.dat']);
