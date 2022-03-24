@@ -395,7 +395,7 @@ function stS = PlayStimulus(stS,sDisplayCallback,sFinishedCallback)
             return;
         end
     end
-    '
+    
     fid = fopen([filename '.dat'],'w');
     if fid < 0
         error('could not open data file %s for writing',[filename '.dat']);
