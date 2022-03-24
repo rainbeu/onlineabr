@@ -45,18 +45,18 @@ function devID = get_playrec_device_id(varargin)
             
             devID = dev(idx).deviceID;
             
-            fprintf('\n');
-            fprintf('  possible devices:\n');
-            fprintf('=====================\n');
-            fprintf('\n');
-            for k = 1:length(idx)
-                fprintf('device ID: %1.0f\n', dev(idx(k)).deviceID);
-                fprintf('device name: %s\n', dev(idx(k)).name);
-                fprintf('host API: %s\n', dev(idx(k)).hostAPI);
-                fprintf('max # input channels: %1.0f\n', dev(idx(k)).inputChans);
-                fprintf('max # output channels: %1.0f\n', dev(idx(k)).outputChans);
-                fprintf('\n');
-            end
+%             fprintf('\n');
+%             fprintf('  possible devices:\n');
+%             fprintf('=====================\n');
+%             fprintf('\n');
+%             for k = 1:length(idx)
+%                 fprintf('device ID: %1.0f\n', dev(idx(k)).deviceID);
+%                 fprintf('device name: %s\n', dev(idx(k)).name);
+%                 fprintf('host API: %s\n', dev(idx(k)).hostAPI);
+%                 fprintf('max # input channels: %1.0f\n', dev(idx(k)).inputChans);
+%                 fprintf('max # output channels: %1.0f\n', dev(idx(k)).outputChans);
+%                 fprintf('\n');
+%             end
             
         else
             
