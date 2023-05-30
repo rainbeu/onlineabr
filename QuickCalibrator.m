@@ -141,7 +141,7 @@ function varargout = QuickCalibrator(sSwitchSetting,sExpName,varargin)
         if strcmpi(sSwitchSetting,'probe') || strcmpi(sSwitchSetting,'knowles')
             Tmp = fftfilt(stS.MicFilter(:,mfOutInChannelList(nChannelIdx,2)+1),[vfFullImpulseResponse(:,nChannelIdx);zeros(size(stS.MicFilter,1),1)]);
             filter_latency = round(median(grpdelay(stS.MicFilter(:,mfOutInChannelList(nChannelIdx,2)+1))));
-            vfFullImpulseResponse(:,nChannelIdx) = Tmp(filter_latency+(0:length(vfFullImpulseResponse)-1));
+            vfFullImpulseResponse(:,nChannelIdx) = Tmp(filter_latency+(1:length(vfFullImpulseResponse)));
         end
         [dummy,nLatency] = max(abs(hilbert(vfFullImpulseResponse(1:nSamplingFrequency,nChannelIdx))));
         
